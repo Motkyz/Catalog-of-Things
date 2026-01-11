@@ -2,10 +2,97 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/mainFragment">
+    app:startDestination="@id/startFragment">
 
     <fragment
-        android:id="@+id/mainFragment"
-        android:name="com.example.catalogofthings.presenter.MainFragment"
-        android:label="MainFragment" />
+        android:id="@+id/startFragment"
+        android:name="com.example.catalogofthings.presenter.fragments.StartFragment"
+        android:label="StartFragment">
+
+        <action
+            android:id="@+id/action_startFragment_to_noteFragment"
+            app:destination="@id/noteFragment">
+
+            <argument
+                android:name="noteTitle"
+                app:argType="string"
+                app:nullable="true">
+            </argument>
+            <argument
+                android:name="description"
+                app:argType="string"
+                app:nullable="true">
+            </argument>
+            <argument
+                android:name="date"
+                app:argType="string"
+                app:nullable="true">
+            </argument>
+        </action>
+
+        <action
+            android:id="@+id/action_startFragment_to_folderFragment"
+            app:destination="@id/folderFragment">
+            <argument
+                android:name="title"
+                app:argType="string"
+                app:nullable="true">
+            </argument>
+<!--            TODO надо сюда впихнуть список с вложенными заметками/папками -->
+<!--            <argument-->
+<!--                android:name=""-->
+<!--                app:argType="string"-->
+<!--                app:nullable="true">-->
+<!--            </argument>-->
+        </action>
+
+        <action
+            android:id="@+id/action_startFragment_to_newFolderFragment"
+            app:destination="@id/folderFragment">
+        </action>
+    </fragment>
+
+    <fragment
+        android:id="@+id/noteFragment"
+        android:name="com.example.catalogofthings.presenter.fragments.NoteFragment"
+        android:label="NoteFragment">
+
+        <action
+            android:id="@+id/action_noteFragment_to_chooseTagBottomSheet"
+            app:destination="@id/chooseTagBottomSheet" />
+
+        <action
+            android:id="@+id/action_noteFragment_to_startFragment"
+            app:destination="@id/startFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/folderFragment"
+        android:name="com.example.catalogofthings.presenter.fragments.FolderFragment"
+        android:label="FolderFragment">
+
+        <action
+            android:id="@+id/action_folderFragment_to_startFragment"
+            app:destination="@id/startFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/newTagFragment"
+        android:name="com.example.catalogofthings.presenter.fragments.NewTagFragment"
+        android:label="NewTagFragment" />
+
+    <dialog
+        android:id="@+id/chooseTagBottomSheet"
+        android:name="com.example.catalogofthings.presenter.fragments.ChooseTagsBottomSheet"
+        android:label="ChooseTagsBottomSheet">
+
+        <action
+            android:id="@+id/action_chooseTagBottomSheet_to_newTagFragment"
+            app:destination="@id/newTagFragment" />
+
+        <action
+            android:id="@+id/action_chooseTagBottomSheet_to_noteFragment"
+            app:destination="@id/noteFragment" />
+    </dialog>
+
 </navigation>

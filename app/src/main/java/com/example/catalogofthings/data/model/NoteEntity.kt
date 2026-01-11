@@ -9,6 +9,8 @@ import androidx.room.Relation
 @Entity(tableName = NoteEntity.TABLE)
 data class NoteEntity (
     @PrimaryKey(autoGenerate = true)
+    // TODO val isFolder : Boolean,
+    // TODO val images и лучше coil для картинок
     val noteId: Int = 0,
     val title: String,
     val description: String,
