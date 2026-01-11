@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="8dp"
+    android:background="@color/white">
+
+    <include
+        android:id="@+id/include_header_note"
+        layout="@layout/include_header"
+        app:layout_constraintTop_toTopOf="parent">
+    </include>
+
+    <LinearLayout
+        android:id="@+id/info_about_note"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/include_header_note"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="false"
+                style="@style/infoAboutNote"
+                app:icon="@drawable/ic_tag"
+                android:text="Теги:">
+            </Button>
+            
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_tags_notes"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                tools:itemCount="1"
+                tools:listitem="@layout/tag_item"
+
+                android:layout_gravity="center">
+            </androidx.recyclerview.widget.RecyclerView>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="false"
+                style="@style/infoAboutNote"
+                app:icon="@drawable/ic_calendar"
+                android:text="Создано:">
+            </Button>
+
+            <TextView
+                android:id="@+id/date_create_note"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="01.01.2002"
+                android:textSize="18sp">
+            </TextView>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="false"
+                style="@style/infoAboutNote"
+                app:icon="@drawable/ic_edit_description"
+                android:text="Описание:">
+            </Button>
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="260dp"
+                android:background="@drawable/edit_text_border"
+                android:hint="Начните вводить текст..."
+                android:gravity="top"
+                app:layout_constraintTop_toBottomOf="@id/info_about_note">
+            </EditText>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="false"
+                style="@style/infoAboutNote"
+                app:icon="@drawable/ic_photo_camera"
+                android:text="Добавить фото:">
+            </Button>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+                <Button
+                    android:id="@+id/add_photo_note"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:clickable="false"
+                    style="@style/button"
+                    app:icon="@drawable/ic_add">
+                </Button>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+
+                    tools:itemCount="1"
+                    tools:listitem="@layout/image_in_note_item"
+
+                    android:layout_gravity="center">
+                </androidx.recyclerview.widget.RecyclerView>
+            </LinearLayout>
+
+        </LinearLayout>
+    </LinearLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

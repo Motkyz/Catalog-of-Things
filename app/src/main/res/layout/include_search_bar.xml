@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <EditText
+        android:id="@+id/search_in_folder_fragment"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:minHeight="48dp"
+
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+
+        android:layout_marginVertical="10dp"
+        style="@style/search">
+    </EditText>
+
+    <Button
+        android:id="@+id/button_sort_in_folder"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/search_in_folder_fragment"
+        app:layout_constraintStart_toStartOf="@id/search_in_folder_fragment"
+
+        style="@style/button"
+        app:icon = "@drawable/ic_sort"
+        android:text="Сортировка">
+
+    </Button>
+
+    <Button
+        android:id="@+id/button_filter_in_folder"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        app:layout_constraintTop_toBottomOf="@id/search_in_folder_fragment"
+        app:layout_constraintEnd_toEndOf="@id/search_in_folder_fragment"
+
+        style="@style/button"
+        app:icon = "@drawable/ic_filter"
+        android:text="Фильтрация">
+    </Button>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

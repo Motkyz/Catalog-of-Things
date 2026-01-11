@@ -8,7 +8,7 @@ import com.example.catalogofthings.di.viewModel.ViewModelFactory
 import dev.androidbroadcast.vbpd.viewBinding
 import javax.inject.Inject
 
-class MainFragment: Fragment(R.layout.fragment_main) {
+class MainFragment: Fragment(R.layout.fragment_start_app) {
     private val binding: FragmentMainBinding by viewBinding(FragmentMainBinding::bind)
 
     @Inject
