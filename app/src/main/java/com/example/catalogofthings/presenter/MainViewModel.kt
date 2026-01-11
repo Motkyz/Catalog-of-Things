@@ -1,11 +1,119 @@
 package com.example.catalogofthings.presenter
 
-import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.catalogofthings.data.model.NoteEntity
+import com.example.catalogofthings.data.model.NoteWithTags
+import com.example.catalogofthings.data.model.TagEntity
+import com.example.catalogofthings.domain.notesUseCases.CreateNoteUseCase
+import com.example.catalogofthings.domain.notesUseCases.GetNoteUseCase
+import com.example.catalogofthings.domain.notesUseCases.GetNotesUseCase
+import com.example.catalogofthings.domain.notesUseCases.AddTagToNoteUseCase
+import com.example.catalogofthings.domain.notesUseCases.DeleteTagFromNoteUseCase
+import com.example.catalogofthings.domain.notesUseCases.UpdateNoteUseCase
+import com.example.catalogofthings.domain.tagsUseCases.CreateTagUseCase
+import com.example.catalogofthings.domain.tagsUseCases.GetTagsUseCase
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class MainViewModel @Inject constructor(
-
+    private val createNoteUseCase: CreateNoteUseCase,
+    private val getNotesUseCase: GetNotesUseCase,
+    private val getNoteUseCase: GetNoteUseCase,
+    private val updateNoteUseCase: UpdateNoteUseCase,
+    private val createTagUseCase: CreateTagUseCase,
+    private val getTagsUseCase: GetTagsUseCase,
+    private val addTagToNoteUseCase: AddTagToNoteUseCase,
+    private val deleteTagFromNoteUseCase: DeleteTagFromNoteUseCase
 ): ViewModel() {
 
+    private val _notes = MutableLiveData<List<NoteWithTags>>()
+    val notes: LiveData<List<NoteWithTags>>
+        get() = _notes
+
+    init {
+        getNotes(0)
+    }
+
+    fun createNote(
+        noteEntity: NoteEntity,
+        tags: List<TagEntity> = listOf()
+    ) {
+        viewModelScope.launch {
+            val noteId = createNoteUseCase(noteEntity)
+            for (tag in tags) {
+                addTagToNoteUseCase(noteEntity.noteId, tag.tagId)
+            }
+        }
+    }
+
+    fun getNotes(id: Int) {
+        viewModelScope.launch {
+            getNotesUseCase(id).collect {
+                _notes.postValue(it)
+            }
+        }
+    }
+
+    fun updateNote(
+        oldNote: NoteEntity,
+        newNote: NoteEntity,
+        tags: List<TagEntity> = listOf()
+    ) {
+        viewModelScope.launch {
+            updateNoteUseCase(oldNote, newNote)
+            val oldNoteTags = getNoteUseCase(oldNote.noteId)?.tags ?: listOf()
+            for (tag in oldNoteTags) {
+                if (!tags.contains(tag))
+                    deleteTagFromNoteUseCase(oldNote.noteId, tag.tagId)
+            }
+            for (tag in tags) {
+                if (!oldNoteTags.contains(tag))
+                    addTagToNoteUseCase(oldNote.noteId, tag.tagId)
+            }
+        }
+    }
+
+    private val _note = MutableLiveData<NoteWithTags?>()
+    val note: LiveData<NoteWithTags?>
+        get() = _note
+    fun getNote(id: Int) {
+        viewModelScope.launch {
+            _note.postValue(
+                getNoteUseCase(id)
+            )
+        }
+    }
+
+    private val _tags = MutableLiveData<List<TagEntity>>()
+    val tags: LiveData<List<TagEntity>>
+        get() = _tags
+
+    fun getTags() {
+        viewModelScope.launch {
+            getTagsUseCase().collect {
+                _tags.postValue(it)
+            }
+        }
+    }
+
+    fun createTag(tagEntity: TagEntity) {
+        viewModelScope.launch {
+            createTagUseCase(tagEntity)
+        }
+    }
+
+    fun addTagToNote(noteId: Int, tagId: Int) {
+        viewModelScope.launch {
+            addTagToNoteUseCase(noteId, tagId)
+        }
+    }
+
+    fun deleteTagFromNote(noteId: Int, tagId: Int) {
+        viewModelScope.launch {
+            deleteTagFromNoteUseCase(noteId, tagId)
+        }
+    }
 }

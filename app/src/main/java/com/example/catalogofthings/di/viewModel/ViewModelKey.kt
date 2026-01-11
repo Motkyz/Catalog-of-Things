@@ -1,6 +1,5 @@
 package com.example.catalogofthings.di.viewModel
 
-import androidx.annotation.RequiresPermission
 import androidx.lifecycle.ViewModel
 import dagger.MapKey
 import kotlin.reflect.KClass
