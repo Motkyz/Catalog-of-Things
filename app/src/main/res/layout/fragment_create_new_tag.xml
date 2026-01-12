@@ -49,6 +49,7 @@
         android:layout_margin="16dp">
 
         <EditText
+            android:id="@+id/tag_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:minHeight="48dp"
@@ -56,7 +57,7 @@
             style="@style/text.Header">
         </EditText>
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/choose_color_for_create_new_tag"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -64,7 +65,7 @@
             style="@style/infoAboutNote"
             app:icon="@drawable/ic_circle"
             android:text="Выбрать цвет">
-        </Button>
+        </com.google.android.material.button.MaterialButton>
 
     </LinearLayout>
 

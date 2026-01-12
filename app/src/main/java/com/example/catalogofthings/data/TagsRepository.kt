@@ -25,7 +25,6 @@ class TagsRepositoryImpl @Inject constructor(
         dao.upsertTag(
             tagEntityOld.copy(
                 title = tagEntityNew.title,
-                description = tagEntityNew.description,
                 color = tagEntityNew.color
             )
         )
