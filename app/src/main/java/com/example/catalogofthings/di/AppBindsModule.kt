@@ -3,12 +3,18 @@ package com.example.catalogofthings.di
 import android.app.Application
 import android.content.Context
 import androidx.room.Room
+import com.example.catalogofthings.data.ImagesRepository
+import com.example.catalogofthings.data.ImagesRepositoryImpl
 import com.example.catalogofthings.data.NotesRepository
 import com.example.catalogofthings.data.NotesRepositoryImpl
 import com.example.catalogofthings.data.TagsRepository
 import com.example.catalogofthings.data.TagsRepositoryImpl
 import com.example.catalogofthings.data.db.NotesDAO
 import com.example.catalogofthings.data.db.NotesDatabase
+import com.example.catalogofthings.domain.imagesUseCases.CreateImageUseCase
+import com.example.catalogofthings.domain.imagesUseCases.CreateImageUseCaseImpl
+import com.example.catalogofthings.domain.imagesUseCases.DeleteImageUseCase
+import com.example.catalogofthings.domain.imagesUseCases.DeleteImageUseCaseImpl
 import com.example.catalogofthings.domain.notesUseCases.AddImageToNoteUseCase
 import com.example.catalogofthings.domain.notesUseCases.AddImageToNoteUseCaseImpl
 import com.example.catalogofthings.domain.notesUseCases.AddTagToNoteUseCase
@@ -76,6 +82,19 @@ interface AppBindsModule {
     @Binds
     @Singleton
     fun bindGetTagsUseCase(impl: GetTagsUseCaseImpl): GetTagsUseCase
+
+    //Images
+    @Binds
+    @Singleton
+    fun bindImagesRepository(impl: ImagesRepositoryImpl): ImagesRepository
+
+    @Binds
+    @Singleton
+    fun bindCreateImageUseCase(impl: CreateImageUseCaseImpl): CreateImageUseCase
+
+    @Binds
+    @Singleton
+    fun bindDeleteImageUseCase(impl: DeleteImageUseCaseImpl): DeleteImageUseCase
 
     //NoteTags
     @Binds
