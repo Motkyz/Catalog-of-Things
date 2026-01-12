@@ -1,4 +1,33 @@
 package com.example.catalogofthings.presenter.viewModels
 
-class ChooseTagsBottomSheetViewModel {
+import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.catalogofthings.data.model.TagEntity
+import com.example.catalogofthings.domain.tagsUseCases.GetTagsUseCase
+import kotlinx.coroutines.launch
+import javax.inject.Inject
+
+class ChooseTagsBottomSheetViewModel @Inject constructor(
+    private val getTagsUseCase: GetTagsUseCase
+): ViewModel() {
+
+    init {
+        getTags()
+    }
+
+    private val _tags = MutableLiveData<List<TagEntity>>()
+    val tags: LiveData<List<TagEntity>>
+        get() = _tags
+
+    fun getTags() {
+        viewModelScope.launch {
+            getTagsUseCase().collect {
+                _tags.postValue(it)
+                Log.d("Тэги ботома", it.toString())
+            }
+        }
+    }
 }

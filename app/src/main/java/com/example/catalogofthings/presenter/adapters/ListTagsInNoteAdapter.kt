@@ -8,7 +8,7 @@ import com.example.catalogofthings.data.model.TagEntity
 import com.example.catalogofthings.databinding.TagItemBinding
 
 class ListTagsInNoteAdapter (
-    private val onTagClick: (TagEntity) -> Unit = {}
+    private val onTagClick: (TagEntity) -> Unit
 ) : RecyclerView.Adapter<ListTagsInNoteAdapter.ListTagsInNoteViewHolder>() {
 
     private val list : MutableList<TagEntity> = mutableListOf()
@@ -34,7 +34,6 @@ class ListTagsInNoteAdapter (
         this.list.addAll(list)
         notifyDataSetChanged()
     }
-
 
     class ListTagsInNoteViewHolder (
         private val binding : TagItemBinding

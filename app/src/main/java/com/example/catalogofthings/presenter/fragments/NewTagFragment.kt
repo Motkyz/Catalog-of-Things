@@ -9,7 +9,6 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.example.catalogofthings.R
 import com.example.catalogofthings.appComponent
-import com.example.catalogofthings.data.model.TagEntity
 import com.example.catalogofthings.databinding.FragmentCreateNewTagBinding
 import com.example.catalogofthings.di.viewModel.ViewModelFactory
 import com.example.catalogofthings.presenter.viewModels.NewTagViewModel
@@ -45,7 +44,7 @@ class NewTagFragment : Fragment(R.layout.fragment_create_new_tag) {
         binding.chooseColorForCreateNewTag.setOnClickListener {
             ColorPickerDialog
                 .Builder(requireContext())        				// Pass Activity Instance
-                .setTitle("Pick Theme")           	// Default "Choose Color"
+                .setTitle("Выбор цвета")           	// Default "Choose Color"
                 .setColorShape(ColorShape.SQAURE)   // Default ColorShape.CIRCLE
                 .setDefaultColor(-1)     // Pass Default Color
                 .setColorListener { color, colorHex ->

@@ -10,7 +10,7 @@ data class ImageEntity (
     @PrimaryKey(autoGenerate = true)
     val imageId: Int = 0,
     @ColumnInfo(typeAffinity = BLOB)
-    val imageData: ByteArray
+    val imageData: ByteArray?
 ) {
     companion object {
         const val TABLE = "images"
