@@ -43,6 +43,7 @@ class MainViewModel @Inject constructor(
 
     init {
         getNotes(0)
+        getTags()
     }
 
     fun createNote(
@@ -120,12 +121,6 @@ class MainViewModel @Inject constructor(
             getTagsUseCase().collect {
                 _tags.postValue(it)
             }
-        }
-    }
-
-    fun createTag(tagEntity: TagEntity) {
-        viewModelScope.launch {
-            createTagUseCase(tagEntity)
         }
     }
 }

@@ -11,7 +11,6 @@ data class TagEntity (
     @PrimaryKey(autoGenerate = true)
     val tagId: Int = 0,
     val title: String,
-    val description: String,
     val color: Int
 ) {
     companion object {

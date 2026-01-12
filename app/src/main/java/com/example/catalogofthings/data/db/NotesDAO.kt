@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Upsert
+import com.example.catalogofthings.data.model.ImageEntity
 import com.example.catalogofthings.data.model.NoteEntity
 import com.example.catalogofthings.data.model.NoteFull
 import com.example.catalogofthings.data.model.NoteImageCrossRef
@@ -50,6 +51,13 @@ interface NotesDAO {
 
     @Delete
     suspend fun deleteTag(tagEntity: TagEntity)
+
+    //Images
+    @Upsert
+    suspend fun upsertImage(imageEntity: ImageEntity): Long
+
+    @Delete
+    suspend fun deleteImage(imageEntity: ImageEntity): Int
 
     //NoteTags
     @Upsert

@@ -71,4 +71,5 @@ dependencies {
     implementation("io.coil-kt.coil3:coil:3.3.0")
 
     implementation("com.github.dhaval2404:imagepicker:2.1")
+    implementation("com.github.Dhaval2404:ColorPicker:2.3")
 }
