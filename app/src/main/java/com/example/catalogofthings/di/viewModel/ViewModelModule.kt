@@ -3,6 +3,7 @@ package com.example.catalogofthings.di.viewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.catalogofthings.presenter.MainViewModel
+import com.example.catalogofthings.presenter.viewModels.ChooseTagsBottomSheetViewModel
 import com.example.catalogofthings.presenter.viewModels.NewTagViewModel
 import dagger.Binds
 import dagger.Module
@@ -28,5 +29,12 @@ interface ViewModelModule {
     @ViewModelKey(NewTagViewModel::class)
     fun bindNewTagViewModel(
         viewModel: NewTagViewModel
+    ): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(ChooseTagsBottomSheetViewModel::class)
+    fun bindChooseTagsBottomSheetViewModel(
+        viewModel: ChooseTagsBottomSheetViewModel
     ): ViewModel
 }

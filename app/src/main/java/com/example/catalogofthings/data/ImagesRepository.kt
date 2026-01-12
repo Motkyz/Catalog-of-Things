@@ -17,7 +17,6 @@ class ImagesRepositoryImpl @Inject constructor(
             imageEntity
         ).toInt()
 
-
     override suspend fun deleteImage(imageEntity: ImageEntity): Int =
         dao.deleteImage(
             imageEntity

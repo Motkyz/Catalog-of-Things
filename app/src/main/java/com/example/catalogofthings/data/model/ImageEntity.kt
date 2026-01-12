@@ -1,5 +1,7 @@
 package com.example.catalogofthings.data.model
 
+import androidx.room.ColumnInfo
+import androidx.room.ColumnInfo.Companion.BLOB
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -7,7 +9,8 @@ import androidx.room.PrimaryKey
 data class ImageEntity (
     @PrimaryKey(autoGenerate = true)
     val imageId: Int = 0,
-    val imageData: ByteArray
+    @ColumnInfo(typeAffinity = BLOB)
+    val imageData: ByteArray?
 ) {
     companion object {
         const val TABLE = "images"
