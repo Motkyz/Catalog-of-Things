@@ -67,4 +67,8 @@ dependencies {
     implementation("androidx.room:room-runtime:2.8.4")
     implementation("androidx.room:room-ktx:2.8.4")
     ksp("androidx.room:room-compiler:2.8.4")
+
+    implementation("io.coil-kt.coil3:coil:3.3.0")
+
+    implementation("com.github.dhaval2404:imagepicker:2.1")
 }
