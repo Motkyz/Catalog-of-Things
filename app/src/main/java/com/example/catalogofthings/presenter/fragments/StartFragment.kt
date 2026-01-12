@@ -3,6 +3,7 @@ package com.example.catalogofthings.presenter.fragments
 import android.content.Context
 import android.os.Bundle
 import android.provider.ContactsContract
+import android.util.Log
 import android.view.View
 import android.widget.PopupMenu
 import androidx.core.os.bundleOf
@@ -66,6 +67,10 @@ class StartFragment: Fragment(R.layout.fragment_start_app) {
         viewModel.notes.observe(viewLifecycleOwner) { notesWithTags ->
             val noteEntities = notesWithTags?.map { it.note } ?: emptyList()
             adapter.submitList(noteEntities)
+        }
+
+        viewModel.lala.observe(viewLifecycleOwner){
+            Log.d("ЛАЛА В СТАРТЕ", it)
         }
 
         binding.addNew.setOnClickListener {

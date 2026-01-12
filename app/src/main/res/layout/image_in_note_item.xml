@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ImageView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/hshs"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
 
@@ -8,5 +9,6 @@
     android:maxHeight="100dp"
 
     android:minWidth="48dp"
-    android:maxWidth="100dp">
+    android:maxWidth="100dp"
+    android:layout_marginHorizontal="10dp">
 </ImageView>

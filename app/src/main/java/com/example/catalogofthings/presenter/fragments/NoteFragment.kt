@@ -3,17 +3,17 @@ package com.example.catalogofthings.presenter.fragments
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.catalogofthings.R
 import com.example.catalogofthings.appComponent
+import com.example.catalogofthings.data.BitmapConverter
 import com.example.catalogofthings.data.model.ImageEntity
 import com.example.catalogofthings.data.model.NoteEntity
 import com.example.catalogofthings.data.model.NoteFull
@@ -52,15 +52,14 @@ class NoteFragment : Fragment(R.layout.fragment_note) {
             lifecycleScope.launch {
                 val bytes = uriToByteArray(uri) ?: return@launch
                 val newImage = ImageEntity(imageData = bytes)
+                viewModel.loadImage(newImage)
                 currentImages.add(newImage)
                 imagesAdapter.submitList(currentImages.toList())
-
-                println("Добавлено фото, размер currentImages = ${currentImages.size}")
             }
         }
     }
 
-    private suspend fun uriToByteArray(uri: Uri): ByteArray? {
+    private fun uriToByteArray(uri: Uri): ByteArray? {
         return try {
             requireContext().contentResolver.openInputStream(uri)?.use { input ->
                 ByteArrayOutputStream().use { output ->
@@ -88,14 +87,19 @@ class NoteFragment : Fragment(R.layout.fragment_note) {
             binding.includeHeaderNote.titleFolder.requestFocus()
         } else {
             viewModel.getNote(noteId!!.toInt())
-
         }
         viewModel.note.observe(viewLifecycleOwner) { noteFull ->
             if (noteFull != null) {
+                Log.d("ЗАГРУЖАЕМ НОТУ", noteFull.toString())
                 oldNote = noteFull.note
                 updateUI(noteFull)
             }
         }
+
+        viewModel.images.observe(viewLifecycleOwner){
+            Log.d("ЛАЛА В СТАРТЕ", it.toString())
+        }
+
     }
 
     private fun updateUI(noteInfo : NoteFull){
@@ -114,6 +118,7 @@ class NoteFragment : Fragment(R.layout.fragment_note) {
         tagsAdapter.submitList(currentTags.toList())
 
         currentImages.clear()
+        Log.d("CI", currentImages.toString())
         currentImages.addAll(noteInfo.images)
         imagesAdapter.submitList(currentImages.toList())
     }
@@ -144,10 +149,6 @@ class NoteFragment : Fragment(R.layout.fragment_note) {
     private fun setupUI() {
 
         binding.includeHeaderNote.icBackArrow.setOnClickListener {
-            println("Сохраняем заметку. Картинок: ${currentImages.size}")
-            if (currentImages.isNotEmpty()) {
-                println("Размер первой картинки: ${currentImages[0].imageData?.size} байт")
-            }
 
             val title = binding.includeHeaderNote.titleFolder.text?.toString()?.trim() ?: ""
             val description = binding.edittextForDescriptionNote.text?.toString()?.trim() ?: ""
@@ -166,14 +167,15 @@ class NoteFragment : Fragment(R.layout.fragment_note) {
             )
 
             if (isNewNote) {
-                // TODO список тегов поправить
-                viewModel.createNote(updatedNote, emptyList(), currentImages)
+                viewModel.createNote(
+                    noteEntity = updatedNote,
+                    tags = currentTags
+                )
             } else {
                 viewModel.updateNote(
                     oldNote = oldNote ?: updatedNote,
                     newNote = updatedNote,
-                    tags = emptyList(),
-                    images = currentImages
+                    tags = currentTags
                 )
             }
 

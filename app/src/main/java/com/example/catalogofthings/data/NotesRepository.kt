@@ -1,5 +1,6 @@
 package com.example.catalogofthings.data
 
+import android.util.Log
 import com.example.catalogofthings.data.db.NotesDAO
 import com.example.catalogofthings.data.model.NoteEntity
 import com.example.catalogofthings.data.model.NoteFull
@@ -98,6 +99,7 @@ class NotesRepositoryImpl @Inject constructor(
         noteId: Int,
         imageId: Int
     ) {
+        Log.d("addImage", "$noteId, $imageId")
         dao.addNoteImage(
             NoteImageCrossRef(
                 noteId,
