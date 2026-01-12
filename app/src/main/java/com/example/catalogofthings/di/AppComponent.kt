@@ -2,6 +2,7 @@ package com.example.catalogofthings.di
 
 import android.app.Application
 import com.example.catalogofthings.di.viewModel.ViewModelModule
+import com.example.catalogofthings.presenter.fragments.NoteFragment
 import com.example.catalogofthings.presenter.fragments.StartFragment
 import dagger.BindsInstance
 import dagger.Component
@@ -14,6 +15,8 @@ import javax.inject.Singleton
 @Singleton
 abstract class AppComponent {
     abstract fun inject(fragment: StartFragment)
+    abstract fun inject(fragment: NoteFragment)
+
 
     @Component.Builder
     interface Builder {

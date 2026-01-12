@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Button
+<com.google.android.material.button.MaterialButton
+    android:id="@+id/tag_item"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
 
@@ -13,4 +14,4 @@
     app:icon="@drawable/ic_circle"
     app:iconSize="24dp"
     android:text="tag">
-</Button>
+</com.google.android.material.button.MaterialButton>

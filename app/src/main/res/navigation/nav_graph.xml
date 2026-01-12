@@ -14,36 +14,21 @@
             app:destination="@id/noteFragment">
 
             <argument
-                android:name="noteTitle"
+                android:name="id"
                 app:argType="string"
                 app:nullable="true">
             </argument>
-            <argument
-                android:name="description"
-                app:argType="string"
-                app:nullable="true">
-            </argument>
-            <argument
-                android:name="date"
-                app:argType="string"
-                app:nullable="true">
-            </argument>
+
         </action>
 
         <action
             android:id="@+id/action_startFragment_to_folderFragment"
             app:destination="@id/folderFragment">
             <argument
-                android:name="title"
+                android:name="id"
                 app:argType="string"
                 app:nullable="true">
             </argument>
-<!--            TODO надо сюда впихнуть список с вложенными заметками/папками -->
-<!--            <argument-->
-<!--                android:name=""-->
-<!--                app:argType="string"-->
-<!--                app:nullable="true">-->
-<!--            </argument>-->
         </action>
 
         <action

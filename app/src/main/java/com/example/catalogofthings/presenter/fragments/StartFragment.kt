@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import android.provider.ContactsContract
 import android.view.View
+import android.widget.PopupMenu
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -51,15 +52,13 @@ class StartFragment: Fragment(R.layout.fragment_start_app) {
                     findNavController().navigate(
                         R.id.action_startFragment_to_noteFragment,
                         bundleOf(
-                            "noteTitle" to note.title,
-                            "description" to note.description,
-                            "date" to note.date
+                            "id" to note.noteId,
                         )
                     )
                 }
             },
             onNoteLongClick = { note ->
-                // Показать контекстное меню / удаление / перемещение и т.п.
+                // TODO Показать контекстное меню / удаление / перемещение и т.п.
 //                showNoteContextMenu(note)
             },
         )
@@ -71,9 +70,39 @@ class StartFragment: Fragment(R.layout.fragment_start_app) {
         }
 
         viewModel.notes.observe(viewLifecycleOwner) { notesWithTags ->
-            val noteEntities = notesWithTags?.map { it.note } ?: emptyList()  // маппим к NoteEntity
+            val noteEntities = notesWithTags?.map { it.note } ?: emptyList()
             adapter.submitList(noteEntities)
         }
+
+        binding.addNew.setOnClickListener {
+            findNavController().navigate(R.id.action_startFragment_to_noteFragment)
+        }
+
+        // TODO Мне не нравится, но пока так
+        binding.addNew.setOnLongClickListener { view ->
+            val popup = PopupMenu(requireContext(), view)
+            popup.setForceShowIcon(true)
+
+            popup.menuInflater.inflate(R.menu.menu_add_new, popup.menu)
+
+            popup.setOnMenuItemClickListener { item ->
+                when (item.itemId) {
+                    R.id.action_create_note -> {
+                        findNavController().navigate(R.id.action_startFragment_to_noteFragment)
+                        true
+                    }
+                    R.id.action_create_folder -> {
+                        findNavController().navigate(R.id.action_startFragment_to_folderFragment)
+                        true
+                    }
+                    else -> false
+                }
+            }
+
+            popup.show()
+            true
+        }
+
 
     }
 
