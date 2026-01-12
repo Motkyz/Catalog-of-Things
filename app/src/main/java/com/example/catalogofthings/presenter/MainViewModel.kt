@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.catalogofthings.data.model.ImageEntity
 import com.example.catalogofthings.data.model.NoteEntity
+import com.example.catalogofthings.data.model.NoteFull
 import com.example.catalogofthings.data.model.NoteWithTags
 import com.example.catalogofthings.data.model.TagEntity
 import com.example.catalogofthings.domain.notesUseCases.AddImageToNoteUseCase
@@ -99,13 +100,13 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    private val _note = MutableLiveData<NoteWithTags?>()
-    val note: LiveData<NoteWithTags?>
+    private val _note = MutableLiveData<NoteFull?>()
+    val note: LiveData<NoteFull?>
         get() = _note
     fun getNote(id: Int) {
         viewModelScope.launch {
             _note.postValue(
-                getNoteUseCase(id)
+                getFullNoteUseCase(id)
             )
         }
     }

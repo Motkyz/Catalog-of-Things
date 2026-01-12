@@ -32,15 +32,10 @@ class StartFragment: Fragment(R.layout.fragment_start_app) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.createNote(NoteEntity(1, "Test", "123", 100000000L))
-        viewModel.createNote(NoteEntity(2, "Test1", "123", 100000000L))
-        viewModel.createNote(NoteEntity(3, "Test2", "123", 100000000L))
-
 
         adapter = ListNotesAdapter(
             onNoteClick = { note ->
-                // TODO порверка на заметку/ папку через isFolder
-                if (false) {
+                if (note.isFolder) {
                     findNavController().navigate(
                         R.id.action_startFragment_to_folderFragment,
                         bundleOf(
@@ -52,7 +47,7 @@ class StartFragment: Fragment(R.layout.fragment_start_app) {
                     findNavController().navigate(
                         R.id.action_startFragment_to_noteFragment,
                         bundleOf(
-                            "id" to note.noteId,
+                            "id" to note.noteId.toString()
                         )
                     )
                 }
@@ -64,7 +59,6 @@ class StartFragment: Fragment(R.layout.fragment_start_app) {
         )
 
         with(binding.includedRecyclerNotesStartFragment.recyclerNotes) {
-            this
             layoutManager = LinearLayoutManager(requireContext())
             adapter = this@StartFragment.adapter
         }
@@ -75,34 +69,16 @@ class StartFragment: Fragment(R.layout.fragment_start_app) {
         }
 
         binding.addNew.setOnClickListener {
-            findNavController().navigate(R.id.action_startFragment_to_noteFragment)
+            findNavController().navigate(
+                R.id.action_startFragment_to_noteFragment,
+                bundleOf("id" to "0")
+            )
         }
 
-        // TODO Мне не нравится, но пока так
-        binding.addNew.setOnLongClickListener { view ->
-            val popup = PopupMenu(requireContext(), view)
-            popup.setForceShowIcon(true)
-
-            popup.menuInflater.inflate(R.menu.menu_add_new, popup.menu)
-
-            popup.setOnMenuItemClickListener { item ->
-                when (item.itemId) {
-                    R.id.action_create_note -> {
-                        findNavController().navigate(R.id.action_startFragment_to_noteFragment)
-                        true
-                    }
-                    R.id.action_create_folder -> {
-                        findNavController().navigate(R.id.action_startFragment_to_folderFragment)
-                        true
-                    }
-                    else -> false
-                }
-            }
-
-            popup.show()
+        binding.addNew.setOnLongClickListener {
+            findNavController().navigate(R.id.action_startFragment_to_newFolderFragment)
             true
         }
-
 
     }
 

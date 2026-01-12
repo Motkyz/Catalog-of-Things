@@ -27,6 +27,11 @@ class ListNotesAdapter(
     override fun onBindViewHolder(holder: ListNotesViewHolder, position: Int) {
         val note = getItem(position)
         holder.bind(note)
+
+        holder.itemView.setOnClickListener {
+            onNoteClick(note);
+            onNoteLongClick(note)
+        }
     }
 
     class ListNotesViewHolder (
