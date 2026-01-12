@@ -2,6 +2,8 @@ package com.example.catalogofthings.data
 
 import com.example.catalogofthings.data.db.NotesDAO
 import com.example.catalogofthings.data.model.NoteEntity
+import com.example.catalogofthings.data.model.NoteFull
+import com.example.catalogofthings.data.model.NoteImageCrossRef
 import com.example.catalogofthings.data.model.NoteWithTags
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
@@ -10,11 +12,14 @@ import com.example.catalogofthings.data.model.NoteTagCrossRef
 interface NotesRepository {
     fun getNotes(id: Int = 0): Flow<List<NoteWithTags>>
     suspend fun getNote(id: Int): NoteWithTags?
+    suspend fun getFullNote(id: Int): NoteFull?
     suspend fun updateNote(oldNote: NoteEntity, newNote: NoteEntity)
     suspend fun createNote(noteEntity: NoteEntity): Int
     suspend fun deleteNote(noteEntity: NoteEntity)
     suspend fun addTag(noteId: Int, tagId: Int)
     suspend fun deleteTag(noteId: Int, tagId: Int)
+    suspend fun addImage(noteId: Int, imageId: Int)
+    suspend fun deleteImage(noteId: Int, imageId: Int)
     suspend fun updateChildrenCount(parentId: Int)
 }
 
@@ -25,10 +30,11 @@ class NotesRepositoryImpl @Inject constructor(
         return dao.getNotes(id)
     }
 
-    override suspend fun getNote(id: Int): NoteWithTags? {
-        val note = dao.getNote(id)
-        return note
-    }
+    override suspend fun getNote(id: Int): NoteWithTags? =
+        dao.getNote(id)
+
+    override suspend fun getFullNote(id: Int): NoteFull? =
+        dao.getFullNote(id)
 
     override suspend fun updateNote(
         oldNote: NoteEntity,
@@ -84,6 +90,30 @@ class NotesRepositoryImpl @Inject constructor(
             NoteTagCrossRef(
                 noteId,
                 tagId
+            )
+        )
+    }
+
+    override suspend fun addImage(
+        noteId: Int,
+        imageId: Int
+    ) {
+        dao.addNoteImage(
+            NoteImageCrossRef(
+                noteId,
+                imageId
+            )
+        )
+    }
+
+    override suspend fun deleteImage(
+        noteId: Int,
+        imageId: Int
+    ) {
+        dao.deleteNoteImage(
+            NoteImageCrossRef(
+                noteId,
+                imageId
             )
         )
     }

@@ -9,12 +9,18 @@ import com.example.catalogofthings.data.TagsRepository
 import com.example.catalogofthings.data.TagsRepositoryImpl
 import com.example.catalogofthings.data.db.NotesDAO
 import com.example.catalogofthings.data.db.NotesDatabase
+import com.example.catalogofthings.domain.notesUseCases.AddImageToNoteUseCase
+import com.example.catalogofthings.domain.notesUseCases.AddImageToNoteUseCaseImpl
 import com.example.catalogofthings.domain.notesUseCases.AddTagToNoteUseCase
 import com.example.catalogofthings.domain.notesUseCases.AddTagToNoteUseCaseImpl
 import com.example.catalogofthings.domain.notesUseCases.CreateNoteUseCase
 import com.example.catalogofthings.domain.notesUseCases.CreateNoteUseCaseImpl
+import com.example.catalogofthings.domain.notesUseCases.DeleteImageFromNoteUseCase
+import com.example.catalogofthings.domain.notesUseCases.DeleteImageFromNoteUseCaseImpl
 import com.example.catalogofthings.domain.notesUseCases.DeleteTagFromNoteUseCase
 import com.example.catalogofthings.domain.notesUseCases.DeleteTagFromNoteUseCaseImpl
+import com.example.catalogofthings.domain.notesUseCases.GetFullNoteUseCase
+import com.example.catalogofthings.domain.notesUseCases.GetFullNoteUseCaseImpl
 import com.example.catalogofthings.domain.notesUseCases.GetNoteUseCase
 import com.example.catalogofthings.domain.notesUseCases.GetNoteUseCaseImpl
 import com.example.catalogofthings.domain.notesUseCases.GetNotesUseCase
@@ -52,6 +58,10 @@ interface AppBindsModule {
 
     @Binds
     @Singleton
+    fun bindGetFullNoteUseCase(impl: GetFullNoteUseCaseImpl): GetFullNoteUseCase
+
+    @Binds
+    @Singleton
     fun bindUpdateNoteUseCase(impl: UpdateNoteUseCaseImpl): UpdateNoteUseCase
 
     //Tags
@@ -75,6 +85,15 @@ interface AppBindsModule {
     @Binds
     @Singleton
     fun bindDeleteTagFromNoteUseCase(impl: DeleteTagFromNoteUseCaseImpl): DeleteTagFromNoteUseCase
+
+    //NoteImages
+    @Binds
+    @Singleton
+    fun bindAddImageToNoteUseCase(impl: AddImageToNoteUseCaseImpl): AddImageToNoteUseCase
+
+    @Binds
+    @Singleton
+    fun bindDeleteImageFromNoteUseCase(impl: DeleteImageFromNoteUseCaseImpl): DeleteImageFromNoteUseCase
 
     companion object {
         @Provides

@@ -66,3 +66,20 @@ data class NoteWithTags(
     )
     val tags: List<TagEntity>
 )
+
+data class NoteFull(
+    @Embedded
+    val note: NoteEntity,
+    @Relation(
+        parentColumn = "noteId",
+        entityColumn = "tagId",
+        associateBy = Junction(NoteTagCrossRef::class)
+    )
+    val tags: List<TagEntity>,
+    @Relation(
+        parentColumn = "noteId",
+        entityColumn = "imageId",
+        associateBy = Junction(NoteImageCrossRef::class)
+    )
+    val images: List<ImageEntity>
+)

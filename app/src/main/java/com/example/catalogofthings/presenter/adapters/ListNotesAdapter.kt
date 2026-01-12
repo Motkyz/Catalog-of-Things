@@ -47,7 +47,7 @@ class ListNotesAdapter(
                     ContextCompat.getColor(itemView.context, R.color.backgroundElements)
                 )
             }
-            else imageForElements.imageTintList = null
+            else if (icon != R.drawable.ic_folder) imageForElements.imageTintList = null
             textForCountNote.text = if (item.isFolder) item.childrenCount.toString() else ""
             textForTitleNote.text = item.title
         }
