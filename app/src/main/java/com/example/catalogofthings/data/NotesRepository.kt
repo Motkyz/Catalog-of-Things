@@ -12,8 +12,10 @@ interface NotesRepository {
     suspend fun getNote(id: Int): NoteWithTags?
     suspend fun updateNote(oldNote: NoteEntity, newNote: NoteEntity)
     suspend fun createNote(noteEntity: NoteEntity): Int
+    suspend fun deleteNote(noteEntity: NoteEntity)
     suspend fun addTag(noteId: Int, tagId: Int)
     suspend fun deleteTag(noteId: Int, tagId: Int)
+    suspend fun updateChildrenCount(parentId: Int)
 }
 
 class NotesRepositoryImpl @Inject constructor(
@@ -40,12 +42,27 @@ class NotesRepositoryImpl @Inject constructor(
                 parentId = newNote.parentId
             )
         )
+
+        if (oldNote.parentId != newNote.parentId) {
+            updateChildrenCount(oldNote.parentId)
+            updateChildrenCount(newNote.parentId)
+        }
     }
 
-    override suspend fun createNote(noteEntity: NoteEntity): Int =
-        dao.upsertNote(
+    override suspend fun createNote(noteEntity: NoteEntity): Int {
+        val noteId = dao.upsertNote(
             noteEntity
         ).toInt()
+
+        updateChildrenCount(noteEntity.parentId)
+
+        return noteId
+    }
+
+    override suspend fun deleteNote(noteEntity: NoteEntity) {
+        dao.deleteNote(noteEntity)
+        updateChildrenCount(noteEntity.parentId)
+    }
 
     override suspend fun addTag(
         noteId: Int,
@@ -69,5 +86,19 @@ class NotesRepositoryImpl @Inject constructor(
                 tagId
             )
         )
+    }
+
+    override suspend fun updateChildrenCount(parentId: Int) {
+        if (parentId != 0) {
+            val count = dao.getChildrenCount(parentId)
+            val note = dao.getNoteWithOutTags(parentId)
+            if (note != null) {
+                dao.upsertNote(
+                    note.copy(
+                        childrenCount = count
+                    )
+                )
+            }
+        }
     }
 }

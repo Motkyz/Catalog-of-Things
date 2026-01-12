@@ -3,18 +3,20 @@ package com.example.catalogofthings.presenter.adapters
 import android.content.res.ColorStateList
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.ImageView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import coil3.load
 import com.example.catalogofthings.R
+import com.example.catalogofthings.data.BitmapConverter
 import com.example.catalogofthings.data.model.NoteEntity
 import com.example.catalogofthings.databinding.NoteItemBinding
 
 
-class ListNotesAdapter (private val onNoteClick: (NoteEntity) -> Unit,
-                        private val onNoteLongClick: (NoteEntity) -> Unit = {}
+class ListNotesAdapter(
+    private val onNoteClick: (NoteEntity) -> Unit,
+    private val onNoteLongClick: (NoteEntity) -> Unit = {}
 ) : ListAdapter<NoteEntity, ListNotesAdapter.ListNotesViewHolder>(NoteDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ListNotesViewHolder {
@@ -32,20 +34,23 @@ class ListNotesAdapter (private val onNoteClick: (NoteEntity) -> Unit,
     ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item : NoteEntity) = with(binding) {
-//            TODO val icon = if (item.isFolder) R.drawable.ic_folder else картинкаИзЗаписи ?: R.drawable.ic_no_image
-//            imageForElements.setImageDrawable(ContextCompat.getDrawable(itemView.context, icon))
-//            if (icon == R.drawable.ic_no_image){
-//                imageForElements.imageTintList = ColorStateList.valueOf(
-//                    ContextCompat.getColor(itemView.context, R.color.backgroundElements)
-//                )
-//            }
-//            TODO textForCountNote.text = if (item.isFolder) getNumNotes(item.noteId) else ""
+            val icon = if (item.isFolder)
+                R.drawable.ic_folder
+            else
+                BitmapConverter.toBitmap(item.icon)
+                    ?: R.drawable.ic_no_image
+
+            imageForElements.load(icon)
+
+            if (icon == R.drawable.ic_no_image){
+                imageForElements.imageTintList = ColorStateList.valueOf(
+                    ContextCompat.getColor(itemView.context, R.color.backgroundElements)
+                )
+            }
+            else imageForElements.imageTintList = null
+            textForCountNote.text = if (item.isFolder) item.childrenCount.toString() else ""
             textForTitleNote.text = item.title
         }
-
-//    private fun getNumNotes(idNote : Int){
-//        TODO сюда можно вставить функцию с высчитыванием чиселки для textForCountNote
-//    }
     }
 }
 

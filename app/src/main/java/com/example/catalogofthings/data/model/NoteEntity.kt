@@ -1,5 +1,7 @@
 package com.example.catalogofthings.data.model
 
+import androidx.room.ColumnInfo
+import androidx.room.ColumnInfo.Companion.BLOB
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.Junction
@@ -9,16 +11,48 @@ import androidx.room.Relation
 @Entity(tableName = NoteEntity.TABLE)
 data class NoteEntity (
     @PrimaryKey(autoGenerate = true)
-    // TODO val isFolder : Boolean,
-    // TODO val images и лучше coil для картинок
     val noteId: Int = 0,
     val title: String,
+    val isFolder: Boolean,
     val description: String,
     val date: Long,
     val parentId: Int = 0,
+    val childrenCount: Int = 0,
+
+    @ColumnInfo(typeAffinity = BLOB)
+    val icon: ByteArray? = null
+    // TODO val images и лучше coil для картинок
 ) {
     companion object {
         const val TABLE = "notes"
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as NoteEntity
+
+        if (noteId != other.noteId) return false
+        if (isFolder != other.isFolder) return false
+        if (date != other.date) return false
+        if (parentId != other.parentId) return false
+        if (title != other.title) return false
+        if (description != other.description) return false
+        if (!icon.contentEquals(other.icon)) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = noteId
+        result = 31 * result + isFolder.hashCode()
+        result = 31 * result + date.hashCode()
+        result = 31 * result + parentId
+        result = 31 * result + title.hashCode()
+        result = 31 * result + description.hashCode()
+        result = 31 * result + icon.contentHashCode()
+        return result
     }
 }
 

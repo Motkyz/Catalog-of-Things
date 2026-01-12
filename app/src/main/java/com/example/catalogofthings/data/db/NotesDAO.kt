@@ -26,8 +26,14 @@ interface NotesDAO {
     @Query("SELECT * FROM ${NoteEntity.TABLE} WHERE noteId = :id")
     suspend fun getNote(id: Int): NoteWithTags?
 
+    @Query("SELECT * FROM ${NoteEntity.TABLE} WHERE noteId = :id")
+    suspend fun getNoteWithOutTags(id: Int): NoteEntity?
+
     @Delete
     suspend fun deleteNote(noteEntity: NoteEntity)
+
+    @Query("SELECT COUNT() FROM ${NoteEntity.TABLE} WHERE parentId=:parentId")
+    suspend fun getChildrenCount(parentId: Int): Int
 
     //Tags
     @Upsert
