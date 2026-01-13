@@ -18,6 +18,7 @@ import com.example.catalogofthings.databinding.FragmentStartAppBinding
 import com.example.catalogofthings.di.viewModel.ViewModelFactory
 import com.example.catalogofthings.presenter.MainViewModel
 import com.example.catalogofthings.presenter.adapters.ListNotesAdapter
+import com.example.catalogofthings.presenter.viewModels.FolderViewModel
 import dev.androidbroadcast.vbpd.viewBinding
 import javax.inject.Inject
 
@@ -27,12 +28,12 @@ class StartFragment: Fragment(R.layout.fragment_start_app) {
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
 
-    private val viewModel: MainViewModel by viewModels {viewModelFactory}
+    private val viewModel: FolderViewModel by viewModels {viewModelFactory}
     private lateinit var adapter : ListNotesAdapter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        viewModel.getNotes(0)
 
         adapter = ListNotesAdapter(
             onNoteClick = { note ->
@@ -40,8 +41,7 @@ class StartFragment: Fragment(R.layout.fragment_start_app) {
                     findNavController().navigate(
                         R.id.action_startFragment_to_folderFragment,
                         bundleOf(
-                            "title" to note.title
-//                            и список добавить
+                            "id" to note.noteId
                         )
                     )
                 } else {
@@ -70,14 +70,25 @@ class StartFragment: Fragment(R.layout.fragment_start_app) {
         }
 
         binding.addNew.setOnClickListener {
+            val parentId = viewModel.currentFolder.value?.note?.noteId ?: 0
             findNavController().navigate(
                 R.id.action_startFragment_to_noteFragment,
-                bundleOf("id" to "0")
+                bundleOf(
+                    "id" to "0",
+                    "parentId" to parentId
+                )
             )
         }
 
         binding.addNew.setOnLongClickListener {
-            findNavController().navigate(R.id.action_startFragment_to_newFolderFragment)
+            viewModel.createFolder(
+                NoteEntity(
+                    title = "",
+                    description = "",
+                    isFolder = true,
+                    parentId = viewModel.currentFolder.value?.note?.noteId ?: 0
+                )
+            )
             true
         }
 
