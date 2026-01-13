@@ -55,7 +55,7 @@ class ChooseTagsBottomSheet : BottomSheetDialogFragment(R.layout.choose_tags_bot
 
         binding.createNewTag.setOnClickListener {
             findNavController().navigate(
-                R.id.action_startFragment_to_newTagFragment
+                R.id.action_noteFragment_to_newTagFragment
             )
         }
 

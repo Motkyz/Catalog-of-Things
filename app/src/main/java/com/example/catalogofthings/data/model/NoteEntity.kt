@@ -23,7 +23,6 @@ data class NoteEntity (
 
     @ColumnInfo(typeAffinity = BLOB)
     val icon: ByteArray? = null
-    // TODO val images и лучше coil для картинок
 ) {
     companion object {
         const val TABLE = "notes"

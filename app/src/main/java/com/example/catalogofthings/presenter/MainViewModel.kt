@@ -22,6 +22,8 @@ import com.example.catalogofthings.domain.notesUseCases.GetFullNoteUseCase
 import com.example.catalogofthings.domain.notesUseCases.UpdateNoteUseCase
 import com.example.catalogofthings.domain.tagsUseCases.CreateTagUseCase
 import com.example.catalogofthings.domain.tagsUseCases.GetTagsUseCase
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -48,33 +50,39 @@ class MainViewModel @Inject constructor(
         getNotes(0)
     }
 
-    private val _lala = MutableLiveData<String>()
-    val lala : LiveData<String> get() = _lala
-
-    private val _image = MutableLiveData<ImageEntity>()
-    val image : LiveData<ImageEntity> get() = _image
-
-    fun createNote(
-        noteEntity: NoteEntity,
-        tags: List<TagEntity> = listOf()
-    ) {
-        viewModelScope.launch {
-            val noteId = createNoteUseCase(noteEntity)
-            for (tag in tags) {
-                addTagToNoteUseCase(noteId, tag.tagId)
-            }
-
-            for (image in _images.value ?: listOf()) {
-                addImageToNoteUseCase(noteId, image)
-            }
-        }
-    }
-
     fun getNotes(id: Int) {
         viewModelScope.launch {
             getNotesUseCase(id).collect {
                 _notes.postValue(it)
             }
+        }
+    }
+
+    private val _image = MutableLiveData<ImageEntity>()
+    val image : LiveData<ImageEntity> get() = _image
+
+    private val _success = MutableLiveData<Boolean>()
+    val success: LiveData<Boolean> get() = _success
+    fun createNote(
+        noteEntity: NoteEntity,
+        tags: List<TagEntity> = listOf()
+    ) {
+        try{
+            viewModelScope.launch {
+                val noteId = createNoteUseCase(noteEntity)
+
+                for (image in images.value ?: listOf()) {
+                    addImageToNoteUseCase(noteId, image)
+                }
+                for (tag in tags) {
+                    addTagToNoteUseCase(noteId, tag.tagId)
+                }
+
+                _success.postValue(true)
+            }
+        } catch (e: Exception) {
+            _success.postValue(false)
+            throw e
         }
     }
 
@@ -118,11 +126,11 @@ class MainViewModel @Inject constructor(
         get() = _note
     fun getNote(id: Int) {
         viewModelScope.launch {
-            val noteGetFullNoteUseCase = getFullNoteUseCase(id)
+            val fullNote = getFullNoteUseCase(id)
             _note.postValue(
-                noteGetFullNoteUseCase
+                fullNote
             )
-            val list = noteGetFullNoteUseCase?.images ?: listOf()
+            val list = fullNote?.images ?: listOf()
             _images.postValue(
                 list.map { it.imageId }
             )
@@ -142,17 +150,20 @@ class MainViewModel @Inject constructor(
     }
 
     private val _images = MutableLiveData<List<Int>>()
-    val images : LiveData<List<Int>> get() = _images
+    val images : LiveData<List<Int>>
+        get() = _images
 
     fun loadImage(image : ImageEntity){
         viewModelScope.launch {
             val imageId = createImageUseCase(image)
-
             val currentList = _images.value ?: emptyList()
-            val newList = currentList.toMutableList().apply {
-                add(imageId)
-            }
-            _images.postValue(newList)
+            _images.postValue(currentList + imageId)
+        }
+    }
+
+    fun addImage(noteId: Int, imageId: Int) {
+        viewModelScope.launch {
+            addImageToNoteUseCase(noteId, imageId)
         }
     }
 }

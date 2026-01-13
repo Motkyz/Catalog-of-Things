@@ -69,10 +69,6 @@ class StartFragment: Fragment(R.layout.fragment_start_app) {
             adapter.submitList(noteEntities)
         }
 
-        viewModel.lala.observe(viewLifecycleOwner){
-            Log.d("ЛАЛА В СТАРТЕ", it)
-        }
-
         binding.addNew.setOnClickListener {
             findNavController().navigate(
                 R.id.action_startFragment_to_noteFragment,
