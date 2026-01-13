@@ -5,6 +5,9 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import coil3.load
+import coil3.request.crossfade
+import coil3.request.transformations
+import coil3.transform.RoundedCornersTransformation
 import com.example.catalogofthings.data.BitmapConverter
 import com.example.catalogofthings.data.model.ImageEntity
 import com.example.catalogofthings.databinding.ImageInNoteItemBinding
@@ -45,11 +48,13 @@ class ListImagesAdapter(
     ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(image: ImageEntity) = with(binding) {
-//            val bitmap = BitmapFactory.decodeByteArray(image.imageData, 0, image.imageData.size)
             val bitmap = BitmapConverter.toBitmap(image.imageData)
                 if (bitmap != null) {
-                    hshs.load(bitmap)
-//                    setImageBitmap(bitmap)
+                    imageItem.load(bitmap) {
+                        crossfade(true)
+                        transformations(RoundedCornersTransformation(16f))
+                        size(width = 500, height = 500)
+                    }
             }
         }
     }

@@ -46,7 +46,8 @@ class NotesRepositoryImpl @Inject constructor(
                 title = newNote.title,
                 description = newNote.description,
                 date = newNote.date,
-                parentId = newNote.parentId
+                parentId = newNote.parentId,
+                icon = newNote.icon
             )
         )
 

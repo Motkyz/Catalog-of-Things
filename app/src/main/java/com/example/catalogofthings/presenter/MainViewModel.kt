@@ -11,6 +11,7 @@ import com.example.catalogofthings.data.model.NoteFull
 import com.example.catalogofthings.data.model.NoteWithTags
 import com.example.catalogofthings.data.model.TagEntity
 import com.example.catalogofthings.domain.imagesUseCases.CreateImageUseCase
+import com.example.catalogofthings.domain.imagesUseCases.GetImageUseCase
 import com.example.catalogofthings.domain.notesUseCases.AddImageToNoteUseCase
 import com.example.catalogofthings.domain.notesUseCases.CreateNoteUseCase
 import com.example.catalogofthings.domain.notesUseCases.GetNoteUseCase
@@ -39,8 +40,9 @@ class MainViewModel @Inject constructor(
     private val deleteTagFromNoteUseCase: DeleteTagFromNoteUseCase,
     private val addImageToNoteUseCase: AddImageToNoteUseCase,
     private val deleteImageFromNoteUseCase: DeleteImageFromNoteUseCase,
-    private val createImageUseCase: CreateImageUseCase
-): ViewModel() {
+    private val createImageUseCase: CreateImageUseCase,
+    private val getImageUseCase: GetImageUseCase,
+    ): ViewModel() {
 
     private val _notes = MutableLiveData<List<NoteWithTags>>()
     val notes: LiveData<List<NoteWithTags>>
@@ -59,22 +61,31 @@ class MainViewModel @Inject constructor(
     }
 
     private val _image = MutableLiveData<ImageEntity>()
-    val image : LiveData<ImageEntity> get() = _image
+    val image : LiveData<ImageEntity>
+        get() = _image
+
+    private suspend fun getImage(id : Int) : ImageEntity? {
+        return getImageUseCase(id)
+    }
+
+    private val _imagesData = MutableLiveData<List<ImageEntity>>()
+    val imagesData : LiveData<List<ImageEntity>>
+        get() = _imagesData
 
     private val _success = MutableLiveData<Boolean>()
     val success: LiveData<Boolean> get() = _success
     fun createNote(
-        noteEntity: NoteEntity,
-        tags: List<TagEntity> = listOf()
-    ) {
+        noteEntity: NoteEntity) {
         try{
             viewModelScope.launch {
                 val noteId = createNoteUseCase(noteEntity)
-
-                for (image in images.value ?: listOf()) {
+                Log.d("CNI", images.value.toString())
+                for (image in _images.value ?: listOf()) {
                     addImageToNoteUseCase(noteId, image)
                 }
-                for (tag in tags) {
+                Log.d("CNT", _noteTags.value.toString())
+                for (tag in _noteTags.value ?: listOf()) {
+                    Log.d("CNTI", tag.toString())
                     addTagToNoteUseCase(noteId, tag.tagId)
                 }
 
@@ -88,9 +99,7 @@ class MainViewModel @Inject constructor(
 
     fun updateNote(
         oldNote: NoteEntity,
-        newNote: NoteEntity,
-        tags: List<TagEntity> = listOf(),
-        images: List<ImageEntity> = listOf()
+        newNote: NoteEntity
     ) {
         viewModelScope.launch {
             updateNoteUseCase(oldNote, newNote)
@@ -99,25 +108,25 @@ class MainViewModel @Inject constructor(
             val oldTags = note?.tags ?: listOf()
 
             for (tag in oldTags) {
-                if (!tags.contains(tag))
+                if (!(_noteTags.value ?: listOf()).contains(tag))
                     deleteTagFromNoteUseCase(oldNote.noteId, tag.tagId)
             }
-            for (tag in tags) {
+            for (tag in _noteTags.value ?: listOf()) {
                 if (!oldTags.contains(tag))
                     addTagToNoteUseCase(oldNote.noteId, tag.tagId)
             }
 
-            val oldImages = note?.images ?: listOf()
-//            for (image in oldImages) {
-//                if (!images.contains(image))
-//                    deleteImageFromNoteUseCase(oldNote.noteId, image.imageId)
-//            }
-            for (image in images) {
+            val oldImages = note?.images?.map { it.imageId } ?: listOf()
+            for (image in oldImages) {
+                if (!(_images.value ?: listOf()).contains(image))
+                    deleteImageFromNoteUseCase(oldNote.noteId, image)
+            }
+            for (image in _images.value ?: listOf()) {
                 if (!oldImages.contains(image)) {
-                    val imageId = createImageUseCase(image)
-                    addImageToNoteUseCase(oldNote.noteId, imageId)
+                    addImageToNoteUseCase(oldNote.noteId, image)
                 }
             }
+            _success.postValue(true)
         }
     }
 
@@ -130,9 +139,18 @@ class MainViewModel @Inject constructor(
             _note.postValue(
                 fullNote
             )
+
             val list = fullNote?.images ?: listOf()
             _images.postValue(
                 list.map { it.imageId }
+            )
+            _imagesData.postValue(
+                list
+            )
+
+            val tags = fullNote?.tags ?: listOf()
+            _noteTags.postValue(
+                tags
             )
         }
     }
@@ -158,6 +176,9 @@ class MainViewModel @Inject constructor(
             val imageId = createImageUseCase(image)
             val currentList = _images.value ?: emptyList()
             _images.postValue(currentList + imageId)
+
+            val list = _imagesData.value ?: emptyList()
+            _imagesData.postValue(list + image)
         }
     }
 
@@ -166,4 +187,16 @@ class MainViewModel @Inject constructor(
             addImageToNoteUseCase(noteId, imageId)
         }
     }
+
+    private val _noteTags = MutableLiveData<List<TagEntity>>()
+    val noteTags: LiveData<List<TagEntity>>
+        get() = _noteTags
+
+    fun addTagToList(tag: TagEntity) {
+        viewModelScope.launch {
+            val currentList = _noteTags.value ?: emptyList()
+            _noteTags.postValue(currentList + tag)
+        }
+    }
+
 }

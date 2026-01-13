@@ -59,6 +59,9 @@ interface NotesDAO {
     @Delete
     suspend fun deleteImage(imageEntity: ImageEntity): Int
 
+    @Query("SELECT * FROM ${ImageEntity.TABLE} WHERE imageId = :id")
+    suspend fun getImage(id: Int): ImageEntity?
+
     //NoteTags
     @Upsert
     suspend fun addNoteTag(noteTagCrossRef: NoteTagCrossRef)

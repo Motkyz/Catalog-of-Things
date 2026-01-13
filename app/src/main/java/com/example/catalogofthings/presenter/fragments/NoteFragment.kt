@@ -1,14 +1,10 @@
 package com.example.catalogofthings.presenter.fragments
 
-import android.app.Activity
 import android.content.Context
-import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.Toast
-import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -17,7 +13,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.catalogofthings.R
 import com.example.catalogofthings.appComponent
-import com.example.catalogofthings.data.BitmapConverter
 import com.example.catalogofthings.data.model.ImageEntity
 import com.example.catalogofthings.data.model.NoteEntity
 import com.example.catalogofthings.data.model.NoteFull
@@ -27,7 +22,6 @@ import com.example.catalogofthings.di.viewModel.ViewModelFactory
 import com.example.catalogofthings.presenter.MainViewModel
 import com.example.catalogofthings.presenter.adapters.ListImagesAdapter
 import com.example.catalogofthings.presenter.adapters.ListTagsInNoteAdapter
-import com.github.dhaval2404.imagepicker.ImagePicker
 import dev.androidbroadcast.vbpd.viewBinding
 import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
@@ -45,9 +39,6 @@ class NoteFragment : Fragment(R.layout.fragment_note) {
 
     private lateinit var tagsAdapter: ListTagsInNoteAdapter
     private lateinit var imagesAdapter: ListImagesAdapter
-
-    private val currentImages = mutableListOf<ImageEntity>()
-    private val currentTags = mutableListOf<TagEntity>()
     private var isNewNote : Boolean = false
     private var oldNote : NoteEntity? = null
 
@@ -58,8 +49,6 @@ class NoteFragment : Fragment(R.layout.fragment_note) {
                 val bytes = uriToByteArray(uri) ?: return@launch
                 val newImage = ImageEntity(imageData = bytes)
                 viewModel.loadImage(newImage)
-                currentImages.add(newImage)
-                imagesAdapter.submitList(currentImages.toList())
             }
         }
     }
@@ -95,20 +84,18 @@ class NoteFragment : Fragment(R.layout.fragment_note) {
         }
         viewModel.note.observe(viewLifecycleOwner) { noteFull ->
             if (noteFull != null) {
-                Log.d("Выбранная заметка", noteFull.toString())
                 oldNote = noteFull.note
                 updateUI(noteFull)
             }
         }
-        viewModel.images.observe(viewLifecycleOwner) {
-            Log.d("Изображения", it.toString())
+
+        viewModel.noteTags.observe(viewLifecycleOwner) {
+            tagsAdapter.submitList(it)
         }
 
-//        binding.gotoNewtag.setOnClickListener { //TODO приделать к кнопке
-//            val bottomSheet = ChooseTagsBottomSheet()
-//            bottomSheet.setOnTagClick(::onTagClick)
-//            bottomSheet.show(childFragmentManager, null)
-//        }
+        viewModel.imagesData.observe(viewLifecycleOwner) {
+            imagesAdapter.submitList(it)
+        }
     }
 
     private fun updateUI(noteInfo : NoteFull){
@@ -121,14 +108,6 @@ class NoteFragment : Fragment(R.layout.fragment_note) {
             "dd.MM.yyyy",
             Date(noteInfo.note.date)
         )
-
-        currentTags.clear()
-        currentTags.addAll(noteInfo.tags)
-        tagsAdapter.submitList(currentTags.toList())
-
-        currentImages.clear()
-        currentImages.addAll(noteInfo.images)
-        imagesAdapter.submitList(currentImages.toList())
     }
 
     private fun initAdapters() {
@@ -140,7 +119,9 @@ class NoteFragment : Fragment(R.layout.fragment_note) {
         )
 
         imagesAdapter = ListImagesAdapter(
-            onImageClick = { /* TODO нужно сделать просмотр изображения */ }
+            onImageClick = {
+
+            }
         )
 
         binding.recyclerTagsNotes.apply {
@@ -156,39 +137,46 @@ class NoteFragment : Fragment(R.layout.fragment_note) {
 
     private fun setupUI() {
         binding.includeHeaderNote.icBackArrow.setOnClickListener {
+            findNavController().popBackStack()
+        }
 
+        binding.saveNote.setOnClickListener {
             val title = binding.includeHeaderNote.titleFolder.text?.toString()?.trim() ?: ""
             val description = binding.edittextForDescriptionNote.text?.toString()?.trim() ?: ""
 
             if (title.isBlank() && description.isBlank() &&
-                currentImages.isEmpty()) {
+                viewModel.images.value?.isEmpty() == true) {
                 findNavController().popBackStack()
                 return@setOnClickListener
             }
+
+            val image =
+                if (viewModel.imagesData.value.isNullOrEmpty()) null
+                else viewModel.imagesData.value?.get(0)?.imageData
 
             val updatedNote = NoteEntity(
                 title = title,
                 description = description,
                 isFolder = false,
+                icon = image
             )
 
             if (isNewNote) {
                 viewModel.createNote(
                     noteEntity = updatedNote,
-                    tags = currentTags
                 )
             } else {
                 viewModel.updateNote(
                     oldNote = oldNote ?: updatedNote,
                     newNote = updatedNote,
-                    tags = currentTags
                 )
             }
         }
 
         viewModel.success.observe(viewLifecycleOwner) {
-            if (it == true)
+            if (it == true){
                 findNavController().popBackStack()
+            }
         }
     }
 
@@ -196,7 +184,18 @@ class NoteFragment : Fragment(R.layout.fragment_note) {
         binding.addPhotoNote.setOnClickListener {
             pickImageLauncher.launch("image/*")
         }
+
+        binding.changeTags.setOnClickListener {
+            val bottomSheet = ChooseTagsBottomSheet()
+            bottomSheet.setOnTagClick(::onTagClick)
+            bottomSheet.show(childFragmentManager, null)
+        }
     }
+
+    fun onTagClick(tag: TagEntity) {
+        viewModel.addTagToList(tag)
+    }
+
 
     override fun onAttach(context: Context) {
         context.appComponent.inject(this)

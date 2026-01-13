@@ -7,6 +7,7 @@ import javax.inject.Inject
 interface ImagesRepository {
     suspend fun createImage(imageEntity: ImageEntity): Int
     suspend fun deleteImage(imageEntity: ImageEntity): Int
+    suspend fun getImage(id: Int) : ImageEntity?
 }
 
 class ImagesRepositoryImpl @Inject constructor(
@@ -21,4 +22,7 @@ class ImagesRepositoryImpl @Inject constructor(
         dao.deleteImage(
             imageEntity
         )
+
+    override suspend fun getImage(id: Int): ImageEntity? =
+        dao.getImage(id)
 }

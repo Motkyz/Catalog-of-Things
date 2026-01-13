@@ -15,6 +15,8 @@ import com.example.catalogofthings.domain.imagesUseCases.CreateImageUseCase
 import com.example.catalogofthings.domain.imagesUseCases.CreateImageUseCaseImpl
 import com.example.catalogofthings.domain.imagesUseCases.DeleteImageUseCase
 import com.example.catalogofthings.domain.imagesUseCases.DeleteImageUseCaseImpl
+import com.example.catalogofthings.domain.imagesUseCases.GetImageUseCase
+import com.example.catalogofthings.domain.imagesUseCases.GetImageUseCaseImpl
 import com.example.catalogofthings.domain.notesUseCases.AddImageToNoteUseCase
 import com.example.catalogofthings.domain.notesUseCases.AddImageToNoteUseCaseImpl
 import com.example.catalogofthings.domain.notesUseCases.AddTagToNoteUseCase
@@ -95,6 +97,10 @@ interface AppBindsModule {
     @Binds
     @Singleton
     fun bindDeleteImageUseCase(impl: DeleteImageUseCaseImpl): DeleteImageUseCase
+
+    @Binds
+    @Singleton
+    fun bindGetImageUseCase(impl: GetImageUseCaseImpl): GetImageUseCase
 
     //NoteTags
     @Binds
