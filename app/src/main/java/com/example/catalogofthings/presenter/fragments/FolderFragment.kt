@@ -52,14 +52,18 @@ class FolderFragment : Fragment(R.layout.fragment_open_folder) {
             adapter = this@FolderFragment.adapter
         }
 
-        binding.addNew.setOnClickListener {
+        binding.addNewFolder.setOnClickListener {
+            val parentId = viewModel.currentFolder.value?.note?.noteId ?: 0
             findNavController().navigate(
                 R.id.action_folderFragment_to_noteFragment,
-                bundleOf("id" to "0")
+                bundleOf(
+                    "id" to "0",
+                    "parentId" to parentId
+                )
             )
         }
 
-        binding.addNew.setOnLongClickListener {
+        binding.addNewFolder.setOnLongClickListener {
             viewModel.createFolder(
                 NoteEntity(
                     title = "",

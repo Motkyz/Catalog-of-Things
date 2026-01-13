@@ -111,10 +111,7 @@ class NoteFragment : Fragment(R.layout.fragment_note) {
 
     private fun initAdapters() {
 
-        tagsAdapter = ListTagsInNoteAdapter(
-            onTagClick = ::onTagClick,
-
-        )
+        tagsAdapter = ListTagsInNoteAdapter()
 
         imagesAdapter = ListImagesAdapter(
             onImageClick = {
@@ -158,7 +155,8 @@ class NoteFragment : Fragment(R.layout.fragment_note) {
                 title = title,
                 description = description,
                 isFolder = false,
-                icon = image
+                icon = image,
+                parentId = arguments?.getInt("parentId") ?: 0
             )
 
             if (isNewNote) {

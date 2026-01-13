@@ -45,7 +45,7 @@ class ChooseTagsBottomSheet : BottomSheetDialogFragment(R.layout.choose_tags_bot
             false)
 
         adapter = ListTagsInNoteAdapter(
-            onTagClick = onTagClick
+            onTagClick = onTagClick, onTagLongClick = ::onLongTagClick
         )
 
         with(binding.recyclerChooseTagsBottomModal) {
@@ -66,9 +66,19 @@ class ChooseTagsBottomSheet : BottomSheetDialogFragment(R.layout.choose_tags_bot
         super.onViewCreated(view, savedInstanceState)
 
         viewModel.tags.observe(viewLifecycleOwner) {
-            Log.d("Список тэгов боттом", it.toString())
             adapter.submitList(it)
         }
+    }
+
+    fun onLongTagClick(tag: TagEntity) {
+        TagActionsDialog.show(
+            context = requireContext(),
+            tag = tag,
+            onDelete = {
+                // TODO
+                Log.d("onLongTagClick", "ТИпа тег $tag удалился")
+            }
+        )
     }
 
     override fun onAttach(context: Context) {

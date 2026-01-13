@@ -4,11 +4,13 @@ import android.content.res.ColorStateList
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.example.catalogofthings.data.model.NoteEntity
 import com.example.catalogofthings.data.model.TagEntity
 import com.example.catalogofthings.databinding.TagItemBinding
 
 class ListTagsInNoteAdapter (
     private val onTagClick: (TagEntity) -> Unit = {},
+    private val onTagLongClick: (TagEntity) -> Unit = {},
 ) : RecyclerView.Adapter<ListTagsInNoteAdapter.ListTagsInNoteViewHolder>() {
 
     private val list : MutableList<TagEntity> = mutableListOf()
@@ -23,7 +25,15 @@ class ListTagsInNoteAdapter (
         val item = list[position]
         holder.bind(item)
 
-        holder.itemView.setOnClickListener { onTagClick(item) }    }
+        holder.itemView.setOnClickListener {
+            onTagClick(item)
+        }
+
+        holder.itemView.setOnLongClickListener {
+            onTagLongClick(item)
+            true
+        }
+    }
 
     override fun getItemCount(): Int {
         return list.size
