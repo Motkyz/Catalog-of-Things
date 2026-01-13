@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.catalogofthings.presenter.MainViewModel
 import com.example.catalogofthings.presenter.viewModels.ChooseTagsBottomSheetViewModel
+import com.example.catalogofthings.presenter.viewModels.FolderViewModel
 import com.example.catalogofthings.presenter.viewModels.NewTagViewModel
 import dagger.Binds
 import dagger.Module
@@ -22,6 +23,13 @@ interface ViewModelModule {
     @ViewModelKey(MainViewModel::class)
     fun bindMainViewModel(
         viewModel: MainViewModel
+    ): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(FolderViewModel::class)
+    fun bindFolderViewModel(
+        viewModel: FolderViewModel
     ): ViewModel
 
     @Binds
