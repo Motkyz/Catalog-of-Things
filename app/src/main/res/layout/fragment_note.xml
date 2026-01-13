@@ -54,6 +54,17 @@
                 app:icon="@drawable/ic_tag"
                 android:text="Теги:">
             </Button>
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="28dp"
+                android:minHeight="28dp"
+                android:layout_gravity="center"
+
+                android:src="@drawable/ic_add"
+                app:tint="@color/backgroundElements">
+            </ImageView>
             
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recycler_tags_notes"
@@ -62,6 +73,7 @@
                 android:clickable="false"
                 tools:itemCount="1"
                 tools:listitem="@layout/tag_item"
+                android:background="@android:color/transparent"
 
                 android:layout_gravity="center">
             </androidx.recyclerview.widget.RecyclerView>
@@ -158,6 +170,4 @@
 
         </LinearLayout>
     </LinearLayout>
-
-
 </androidx.constraintlayout.widget.ConstraintLayout>

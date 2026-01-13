@@ -3,7 +3,6 @@ package com.example.catalogofthings.presenter.fragments
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
@@ -113,14 +112,15 @@ class NoteFragment : Fragment(R.layout.fragment_note) {
     private fun initAdapters() {
 
         tagsAdapter = ListTagsInNoteAdapter(
-            onTagClick = {
-                findNavController().navigate(R.id.action_noteFragment_to_chooseTagBottomSheet)
-            }
+            onTagClick = ::onTagClick,
+
         )
 
         imagesAdapter = ListImagesAdapter(
             onImageClick = {
-
+                val bytes = it.imageData
+                FullscreenImageDialog.newInstance(bytes!!)
+                    .show(parentFragmentManager, "fullscreen_image")
             }
         )
 
@@ -193,9 +193,14 @@ class NoteFragment : Fragment(R.layout.fragment_note) {
     }
 
     fun onTagClick(tag: TagEntity) {
-        viewModel.addTagToList(tag)
+        val selectedTags = viewModel.noteTags.value ?: emptyList()
+        val updatedList = if (tag in selectedTags) {
+            selectedTags - tag
+        } else {
+            selectedTags + tag
+        }
+        viewModel.updateTags(updatedList)
     }
-
 
     override fun onAttach(context: Context) {
         context.appComponent.inject(this)

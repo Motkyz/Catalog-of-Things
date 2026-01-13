@@ -26,7 +26,6 @@ class ChooseTagsBottomSheetViewModel @Inject constructor(
         viewModelScope.launch {
             getTagsUseCase().collect {
                 _tags.postValue(it)
-                Log.d("Тэги ботома", it.toString())
             }
         }
     }

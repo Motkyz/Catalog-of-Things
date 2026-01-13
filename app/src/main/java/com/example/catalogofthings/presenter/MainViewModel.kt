@@ -79,13 +79,10 @@ class MainViewModel @Inject constructor(
         try{
             viewModelScope.launch {
                 val noteId = createNoteUseCase(noteEntity)
-                Log.d("CNI", images.value.toString())
                 for (image in _images.value ?: listOf()) {
                     addImageToNoteUseCase(noteId, image)
                 }
-                Log.d("CNT", _noteTags.value.toString())
                 for (tag in _noteTags.value ?: listOf()) {
-                    Log.d("CNTI", tag.toString())
                     addTagToNoteUseCase(noteId, tag.tagId)
                 }
 
@@ -165,6 +162,10 @@ class MainViewModel @Inject constructor(
                 _tags.postValue(it)
             }
         }
+    }
+
+    fun updateTags(newTags : List<TagEntity>){
+        _noteTags.postValue(newTags)
     }
 
     private val _images = MutableLiveData<List<Int>>()
