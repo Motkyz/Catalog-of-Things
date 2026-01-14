@@ -16,11 +16,10 @@ interface NotesRepository {
     suspend fun getFullNote(id: Int): NoteFull?
     suspend fun updateNote(oldNote: NoteEntity, newNote: NoteEntity)
     suspend fun createNote(noteEntity: NoteEntity): Int
-    suspend fun deleteNote(noteEntity: NoteEntity)
+    suspend fun deleteNote(noteEntity: NoteEntity): Int
     suspend fun addTag(noteId: Int, tagId: Int)
     suspend fun deleteTag(noteId: Int, tagId: Int)
     suspend fun addImage(noteId: Int, imageId: Int)
-    suspend fun deleteImage(noteId: Int, imageId: Int)
     suspend fun updateChildrenCount(parentId: Int)
 }
 
@@ -67,9 +66,10 @@ class NotesRepositoryImpl @Inject constructor(
         return noteId
     }
 
-    override suspend fun deleteNote(noteEntity: NoteEntity) {
-        dao.deleteNote(noteEntity)
+    override suspend fun deleteNote(noteEntity: NoteEntity): Int {
+        val id = dao.deleteNote(noteEntity)
         updateChildrenCount(noteEntity.parentId)
+        return id
     }
 
     override suspend fun addTag(
@@ -102,18 +102,6 @@ class NotesRepositoryImpl @Inject constructor(
     ) {
         Log.d("addImage", "$noteId, $imageId")
         dao.addNoteImage(
-            NoteImageCrossRef(
-                noteId,
-                imageId
-            )
-        )
-    }
-
-    override suspend fun deleteImage(
-        noteId: Int,
-        imageId: Int
-    ) {
-        dao.deleteNoteImage(
             NoteImageCrossRef(
                 noteId,
                 imageId

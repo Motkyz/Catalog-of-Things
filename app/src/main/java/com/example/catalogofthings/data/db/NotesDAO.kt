@@ -37,20 +37,20 @@ interface NotesDAO {
     suspend fun getFullNote(id: Int): NoteFull?
 
     @Delete
-    suspend fun deleteNote(noteEntity: NoteEntity)
+    suspend fun deleteNote(noteEntity: NoteEntity): Int
 
     @Query("SELECT COUNT() FROM ${NoteEntity.TABLE} WHERE parentId = :parentId")
     suspend fun getChildrenCount(parentId: Int): Int
 
     //Tags
     @Upsert
-    suspend fun upsertTag(tagEntity: TagEntity)
+    suspend fun upsertTag(tagEntity: TagEntity): Long
 
     @Query("SELECT * FROM ${TagEntity.TABLE} ORDER BY title")
     fun getAllTags(): Flow<List<TagEntity>>
 
     @Delete
-    suspend fun deleteTag(tagEntity: TagEntity)
+    suspend fun deleteTag(tagEntity: TagEntity): Int
 
     //Images
     @Upsert
@@ -75,9 +75,6 @@ interface NotesDAO {
     //NoteImages
     @Upsert
     suspend fun addNoteImage(noteImageCrossRef: NoteImageCrossRef)
-
-    @Delete
-    suspend fun deleteNoteImage(noteImageCrossRef: NoteImageCrossRef)
 
     @Query("DELETE FROM ${NoteImageCrossRef.TABLE} WHERE noteId = :noteId")
     suspend fun deleteNoteImages(noteId: Int)
