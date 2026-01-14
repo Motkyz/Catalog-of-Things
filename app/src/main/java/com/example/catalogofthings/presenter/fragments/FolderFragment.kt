@@ -86,9 +86,9 @@ class FolderFragment : Fragment(R.layout.fragment_open_folder) {
                 viewModel.setFolder(parent)
             }
             else if (parent == 0) {
-                findNavController().popBackStack()
                 viewModel.setFolder(parent)
             }
+            findNavController().popBackStack()
         }
 
         viewModel.notes.observe(viewLifecycleOwner) { notes ->
@@ -105,17 +105,20 @@ class FolderFragment : Fragment(R.layout.fragment_open_folder) {
     }
 
     fun onNoteClick(note: NoteEntity) {
+        val parent = viewModel.currentFolder.value?.note?.noteId
+        val bundle = bundleOf(
+            "id" to note.noteId,
+            "parentId" to parent
+        )
         if (note.isFolder) {
-            val parent = viewModel.currentFolder.value?.note?.noteId
-            viewModel.setFolder(note.noteId)
+            findNavController().navigate(
+                R.id.action_folderFragment_self,
+                bundle
+            )
         } else {
-            val parent = viewModel.currentFolder.value?.note?.noteId
             findNavController().navigate(
                 R.id.action_folderFragment_to_noteFragment,
-                bundleOf(
-                    "id" to note.noteId,
-                    "parentId" to parent
-                )
+                bundle
             )
         }
     }
