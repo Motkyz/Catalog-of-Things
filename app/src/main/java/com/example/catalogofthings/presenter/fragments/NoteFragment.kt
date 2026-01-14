@@ -22,6 +22,7 @@ import com.example.catalogofthings.data.model.NoteFull
 import com.example.catalogofthings.data.model.TagEntity
 import com.example.catalogofthings.databinding.FragmentNoteBinding
 import com.example.catalogofthings.di.viewModel.ViewModelFactory
+import com.example.catalogofthings.presenter.actionDialog.ImageActionsDialog
 import com.example.catalogofthings.presenter.adapters.ListImagesAdapter
 import com.example.catalogofthings.presenter.adapters.ListTagsInNoteAdapter
 import com.example.catalogofthings.presenter.viewModels.NoteFragmentViewModel
@@ -123,7 +124,13 @@ class NoteFragment : Fragment(R.layout.fragment_note) {
             },
             onImageLongClick = {
                 Log.d("onImageLongClick", "НАЖАЛОСЬ")
-                // TODO удаление картинки
+                ImageActionsDialog.show(
+                    context = requireContext(),
+                    image = it,
+                    onDelete = {
+                        (::deleteImage)(it)
+                    }
+                )
             }
         )
 
@@ -197,7 +204,7 @@ class NoteFragment : Fragment(R.layout.fragment_note) {
         }
     }
 
-    fun onTagClick(tag: TagEntity) {
+    private fun onTagClick(tag: TagEntity) {
         val selectedTags = viewModel.noteTags.value ?: emptyList()
         val updatedList = if (tag in selectedTags) {
             selectedTags - tag
@@ -205,6 +212,10 @@ class NoteFragment : Fragment(R.layout.fragment_note) {
             selectedTags + tag
         }
         viewModel.updateTags(updatedList)
+    }
+
+    private fun deleteImage(image : ImageEntity){
+        viewModel.deleteImage(image)
     }
 
     override fun onAttach(context: Context) {

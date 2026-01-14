@@ -104,7 +104,7 @@
                     android:clickable="false"
                     style="@style/infoAboutNote"
                     app:icon="@drawable/ic_calendar"
-                    android:text="Создано:">
+                    android:text="Изменено:">
                 </Button>
 
                 <TextView

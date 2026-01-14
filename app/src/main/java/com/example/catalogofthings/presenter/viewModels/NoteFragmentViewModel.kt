@@ -1,5 +1,6 @@
 package com.example.catalogofthings.presenter.viewModels
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -111,13 +112,6 @@ class NoteFragmentViewModel @Inject constructor(
     val noteTags: LiveData<List<TagEntity>>
         get() = _noteTags
 
-    fun addTagToList(tag: TagEntity) {
-        viewModelScope.launch {
-            val currentList = _noteTags.value ?: emptyList()
-            _noteTags.postValue(currentList + tag)
-        }
-    }
-
     fun updateTags(newTags : List<TagEntity>){
         _noteTags.postValue(newTags)
     }
@@ -141,6 +135,12 @@ class NoteFragmentViewModel @Inject constructor(
     }
 
     fun deleteImage(image: ImageEntity){
-        _noteImages.value?.minusElement(image)
+        viewModelScope.launch {
+
+            val updatedList = _noteImages.value?.minusElement(image)
+            if (updatedList != null){
+                _noteImages.postValue(updatedList)
+            }
+        }
     }
 }

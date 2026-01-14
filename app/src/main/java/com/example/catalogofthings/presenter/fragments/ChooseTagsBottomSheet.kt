@@ -2,7 +2,6 @@ package com.example.catalogofthings.presenter.fragments
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,6 +14,7 @@ import com.example.catalogofthings.appComponent
 import com.example.catalogofthings.data.model.TagEntity
 import com.example.catalogofthings.databinding.ChooseTagsBottomModalBinding
 import com.example.catalogofthings.di.viewModel.ViewModelFactory
+import com.example.catalogofthings.presenter.actionDialog.TagActionsDialog
 import com.example.catalogofthings.presenter.adapters.ListTagsInNoteAdapter
 import com.example.catalogofthings.presenter.viewModels.ChooseTagsBottomSheetViewModel
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment

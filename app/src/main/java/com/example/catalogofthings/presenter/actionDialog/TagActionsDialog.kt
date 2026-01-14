@@ -1,7 +1,8 @@
-package com.example.catalogofthings.presenter.fragments
+package com.example.catalogofthings.presenter.actionDialog
 
 import android.content.Context
 import androidx.appcompat.app.AlertDialog
+import com.example.catalogofthings.data.model.ImageEntity
 import com.example.catalogofthings.data.model.TagEntity
 
 object TagActionsDialog {
@@ -10,7 +11,7 @@ object TagActionsDialog {
         context: Context,
         tag: TagEntity,
         onDelete: () -> Unit,
-        onEdit: (() -> Unit)
+        onEdit: () -> Unit
     ) {
         val items = arrayOf("Удалить", "Редактировать")
 
