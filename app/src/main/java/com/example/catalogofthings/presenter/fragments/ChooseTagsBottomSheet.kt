@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import com.example.catalogofthings.R
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -78,7 +79,10 @@ class ChooseTagsBottomSheet : BottomSheetDialogFragment(R.layout.choose_tags_bot
                 viewModel.deleteTag(tag)
             },
             onEdit = {
-                Log.d("onLongTagClick", "ТИпа тег $tag редачится")
+                findNavController().navigate(
+                    R.id.action_noteFragment_to_newTagFragment,
+                    bundleOf("id" to tag.tagId)
+                )
             }
         )
     }

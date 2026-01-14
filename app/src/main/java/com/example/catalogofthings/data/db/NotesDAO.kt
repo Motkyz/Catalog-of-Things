@@ -50,7 +50,7 @@ interface NotesDAO {
     fun getAllTags(): Flow<List<TagEntity>>
 
     @Query("SELECT * FROM ${TagEntity.TABLE} WHERE tagId = :id")
-    fun getTag(id: Int): TagEntity?
+    suspend fun getTag(id: Int): TagEntity?
 
     @Delete
     suspend fun deleteTag(tagEntity: TagEntity): Int

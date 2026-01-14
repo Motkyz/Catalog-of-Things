@@ -6,22 +6,29 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.catalogofthings.data.model.TagEntity
 import com.example.catalogofthings.domain.tagsUseCases.CreateTagUseCase
+import com.example.catalogofthings.domain.tagsUseCases.GetTagUseCase
 import com.example.catalogofthings.domain.tagsUseCases.UpdateTagUseCase
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class NewTagViewModel @Inject constructor(
+class TagViewModel @Inject constructor(
     private val createTagUseCase: CreateTagUseCase,
-    private val updateTagUseCase: UpdateTagUseCase
+    private val updateTagUseCase: UpdateTagUseCase,
+    private val getTagUseCase: GetTagUseCase
 ): ViewModel() {
 
     private var _color = MutableLiveData<Int?>()
     val color: LiveData<Int?>
         get() = _color
 
-    fun getTag(id : Int) : TagEntity? {
-        // TODO
-        return null
+    private var _tag = MutableLiveData<TagEntity?>()
+    val tag: LiveData<TagEntity?>
+        get() = _tag
+
+    fun getTag(id : Int) {
+        viewModelScope.launch {
+            _tag.postValue(getTagUseCase(id))
+        }
     }
 
     fun createTag(title: String) {

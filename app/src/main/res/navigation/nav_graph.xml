@@ -51,7 +51,14 @@
             app:destination="@id/startFragment" />
         <action
             android:id="@+id/action_noteFragment_to_newTagFragment"
-            app:destination="@id/newTagFragment" />
+            app:destination="@id/newTagFragment" >
+            <argument
+                android:name="id"
+                app:argType="string"
+                app:nullable="true">
+            </argument>
+        </action>
+
     </fragment>
 
     <fragment
@@ -72,7 +79,7 @@
 
     <fragment
         android:id="@+id/newTagFragment"
-        android:name="com.example.catalogofthings.presenter.fragments.NewTagFragment"
+        android:name="com.example.catalogofthings.presenter.fragments.TagFragment"
         android:label="NewTagFragment" />
 
     <dialog

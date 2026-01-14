@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.catalogofthings.presenter.MainViewModel
 import com.example.catalogofthings.presenter.viewModels.ChooseTagsBottomSheetViewModel
 import com.example.catalogofthings.presenter.viewModels.FolderViewModel
-import com.example.catalogofthings.presenter.viewModels.NewTagViewModel
+import com.example.catalogofthings.presenter.viewModels.TagViewModel
 import com.example.catalogofthings.presenter.viewModels.NoteFragmentViewModel
 import dagger.Binds
 import dagger.Module
@@ -42,9 +42,9 @@ interface ViewModelModule {
 
     @Binds
     @IntoMap
-    @ViewModelKey(NewTagViewModel::class)
-    fun bindNewTagViewModel(
-        viewModel: NewTagViewModel
+    @ViewModelKey(TagViewModel::class)
+    fun bindTagViewModel(
+        viewModel: TagViewModel
     ): ViewModel
 
     @Binds
