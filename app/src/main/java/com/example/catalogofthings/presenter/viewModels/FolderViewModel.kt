@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.catalogofthings.data.model.NoteEntity
 import com.example.catalogofthings.data.model.NoteWithTags
 import com.example.catalogofthings.domain.notesUseCases.CreateNoteUseCase
+import com.example.catalogofthings.domain.notesUseCases.DeleteNoteUseCase
 import com.example.catalogofthings.domain.notesUseCases.GetNoteUseCase
 import com.example.catalogofthings.domain.notesUseCases.GetNotesUseCase
 import com.example.catalogofthings.domain.notesUseCases.UpdateNoteUseCase
@@ -18,7 +19,8 @@ class FolderViewModel @Inject constructor(
     private val getNoteUseCase: GetNoteUseCase,
     private val getNotesUseCase: GetNotesUseCase,
     private val createNoteUseCase: CreateNoteUseCase,
-    private val updateNoteUseCase: UpdateNoteUseCase
+    private val updateNoteUseCase: UpdateNoteUseCase,
+    private val deleteNoteUseCase: DeleteNoteUseCase
 ): ViewModel() {
 
     private val _currentFolder = MutableLiveData<NoteWithTags?>()
@@ -56,6 +58,12 @@ class FolderViewModel @Inject constructor(
     fun updateFolder(oldFolder: NoteEntity, newFolder: NoteEntity) {
         viewModelScope.launch {
             updateNoteUseCase(oldFolder, newFolder)
+        }
+    }
+
+    fun deleteNote(note : NoteEntity){
+        viewModelScope.launch {
+            deleteNoteUseCase(note)
         }
     }
 }

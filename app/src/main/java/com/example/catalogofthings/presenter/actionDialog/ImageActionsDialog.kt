@@ -7,18 +7,13 @@ import com.example.catalogofthings.data.model.ImageEntity
 object ImageActionsDialog {
     fun show(
         context: Context,
-        image: ImageEntity,
-        onDelete: () -> Unit,
+        onAccept: () -> Unit,
     ) {
-        val items = arrayOf("Удалить")
-
-
         AlertDialog.Builder(context)
-            .setTitle(image.imageId.toString())
-            .setItems(items) { _, which ->
-                when (which) {
-                    0 -> onDelete()
-                }
+            .setTitle("Удалить изображение?")
+            .setPositiveButton("Удалить"){
+                dialog, _ ->
+                    onAccept()
             }
             .setNegativeButton("Отмена", null)
             .show()

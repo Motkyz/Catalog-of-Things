@@ -9,10 +9,14 @@ import com.example.catalogofthings.data.model.NoteWithTags
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 import com.example.catalogofthings.data.model.NoteTagCrossRef
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.withContext
 
 interface NotesRepository {
     fun getNotes(id: Int = 0): Flow<List<NoteWithTags>>
     suspend fun getNote(id: Int): NoteWithTags?
+    fun getAllFolders(id : Int): Flow<List<NoteEntity>>
     suspend fun getFullNote(id: Int): NoteFull?
     suspend fun updateNote(oldNote: NoteEntity, newNote: NoteEntity)
     suspend fun createNote(noteEntity: NoteEntity): Int
@@ -32,6 +36,9 @@ class NotesRepositoryImpl @Inject constructor(
 
     override suspend fun getNote(id: Int): NoteWithTags? =
         dao.getNote(id)
+
+    override fun getAllFolders(id : Int): Flow<List<NoteEntity>> =
+        dao.getAllFolders(id)
 
     override suspend fun getFullNote(id: Int): NoteFull? =
         dao.getFullNote(id)
@@ -67,6 +74,20 @@ class NotesRepositoryImpl @Inject constructor(
     }
 
     override suspend fun deleteNote(noteEntity: NoteEntity): Int {
+        //Удаляем дочерние элементы
+        if (noteEntity.isFolder) {
+            val children = dao.getNotes(noteEntity.noteId).first()
+            for (child in children) {
+                deleteNote(child.note)
+            }
+        } else {
+            //Удаляем картинки из бд
+            val fullNote = getFullNote(noteEntity.noteId)
+            for (image in fullNote?.images ?: listOf()) {
+                dao.deleteImage(image)
+            }
+        }
+
         val id = dao.deleteNote(noteEntity)
         updateChildrenCount(noteEntity.parentId)
         return id

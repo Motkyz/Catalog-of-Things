@@ -27,6 +27,8 @@ import com.example.catalogofthings.domain.notesUseCases.DeleteNoteUseCase
 import com.example.catalogofthings.domain.notesUseCases.DeleteNoteUseCaseImpl
 import com.example.catalogofthings.domain.notesUseCases.DeleteTagFromNoteUseCase
 import com.example.catalogofthings.domain.notesUseCases.DeleteTagFromNoteUseCaseImpl
+import com.example.catalogofthings.domain.notesUseCases.GetAllFoldersUseCase
+import com.example.catalogofthings.domain.notesUseCases.GetAllFoldersUseCaseImpl
 import com.example.catalogofthings.domain.notesUseCases.GetFullNoteUseCase
 import com.example.catalogofthings.domain.notesUseCases.GetFullNoteUseCaseImpl
 import com.example.catalogofthings.domain.notesUseCases.GetNoteUseCase
@@ -69,6 +71,10 @@ interface AppBindsModule {
     @Binds
     @Singleton
     fun bindGetNoteUseCase(impl: GetNoteUseCaseImpl): GetNoteUseCase
+
+    @Binds
+    @Singleton
+    fun bindGetAllFoldersUseCase(impl: GetAllFoldersUseCaseImpl): GetAllFoldersUseCase
 
     @Binds
     @Singleton

@@ -18,6 +18,7 @@ import com.example.catalogofthings.appComponent
 import com.example.catalogofthings.data.model.NoteEntity
 import com.example.catalogofthings.databinding.FragmentOpenFolderBinding
 import com.example.catalogofthings.di.viewModel.ViewModelFactory
+import com.example.catalogofthings.presenter.actionDialog.NoteActionDialog
 import com.example.catalogofthings.presenter.adapters.ListNotesAdapter
 import com.example.catalogofthings.presenter.viewModels.FolderViewModel
 import dev.androidbroadcast.vbpd.viewBinding
@@ -141,8 +142,22 @@ class FolderFragment : Fragment(R.layout.fragment_open_folder) {
     }
 
     fun onNoteLongClick(note: NoteEntity) {
-        // TODO Показать контекстное меню / удаление / перемещение и т.п.
-//                showNoteContextMenu(note)
+        NoteActionDialog.show(
+            context = requireContext(),
+            note = note,
+            onDelete = {
+                viewModel.deleteNote(note)
+            },
+            replaceInFolder = {
+                val bottomSheet = ChooseFolderBottomSheet()
+                bottomSheet.setNote(note)
+                bottomSheet.setOnFolderClick{
+                    val newParent = it.noteId
+                    viewModel.updateFolder(note, note.copy(parentId = newParent))
+                }
+                bottomSheet.show(childFragmentManager, null)
+            }
+        )
     }
 
     fun updateFolder(title: String) {

@@ -13,11 +13,11 @@ object TagActionsDialog {
         onDelete: () -> Unit,
         onEdit: () -> Unit
     ) {
-        val items = arrayOf("Удалить", "Редактировать")
+        val items = arrayOf("Редактировать", "Удалить")
 
 
         AlertDialog.Builder(context)
-            .setTitle(tag.title)
+            .setTitle("Выберите действие с " + tag.title)
             .setItems(items) { _, which ->
                 when (which) {
                     0 -> onDelete()

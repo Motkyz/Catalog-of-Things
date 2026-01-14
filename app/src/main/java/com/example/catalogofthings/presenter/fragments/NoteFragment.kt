@@ -126,8 +126,7 @@ class NoteFragment : Fragment(R.layout.fragment_note) {
                 Log.d("onImageLongClick", "НАЖАЛОСЬ")
                 ImageActionsDialog.show(
                     context = requireContext(),
-                    image = it,
-                    onDelete = {
+                    onAccept = {
                         (::deleteImage)(it)
                     }
                 )
