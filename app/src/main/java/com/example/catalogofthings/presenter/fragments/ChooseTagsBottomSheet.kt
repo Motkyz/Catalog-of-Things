@@ -75,8 +75,10 @@ class ChooseTagsBottomSheet : BottomSheetDialogFragment(R.layout.choose_tags_bot
             context = requireContext(),
             tag = tag,
             onDelete = {
-                // TODO
-                Log.d("onLongTagClick", "ТИпа тег $tag удалился")
+                viewModel.deleteTag(tag)
+            },
+            onEdit = {
+                Log.d("onLongTagClick", "ТИпа тег $tag редачится")
             }
         )
     }

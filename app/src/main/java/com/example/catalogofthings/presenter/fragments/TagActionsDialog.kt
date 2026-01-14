@@ -10,15 +10,17 @@ object TagActionsDialog {
         context: Context,
         tag: TagEntity,
         onDelete: () -> Unit,
-        onEdit: (() -> Unit)? = null
+        onEdit: (() -> Unit)
     ) {
-        val items = mutableListOf(("Удалить"))
+        val items = arrayOf("Удалить", "Редактировать")
+
 
         AlertDialog.Builder(context)
             .setTitle(tag.title)
-            .setItems(items.toTypedArray()) { _, which ->
+            .setItems(items) { _, which ->
                 when (which) {
                     0 -> onDelete()
+                    1 -> onEdit.invoke()
                 }
             }
             .setNegativeButton("Отмена", null)

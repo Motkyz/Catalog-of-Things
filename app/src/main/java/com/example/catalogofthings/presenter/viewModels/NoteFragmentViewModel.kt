@@ -139,4 +139,8 @@ class NoteFragmentViewModel @Inject constructor(
             _noteImages.postValue(currentList + createdImage)
         }
     }
+
+    fun deleteImage(image: ImageEntity){
+        _noteImages.value?.minusElement(image)
+    }
 }
