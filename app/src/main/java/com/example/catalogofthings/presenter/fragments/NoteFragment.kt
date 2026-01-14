@@ -121,6 +121,9 @@ class NoteFragment : Fragment(R.layout.fragment_note) {
                 val bytes = it.imageData
                 FullscreenImageDialog.newInstance(bytes!!)
                     .show(parentFragmentManager, "fullscreen_image")
+            },
+            onImageLongClick = {
+                Log.d("onImageLongClick", "НАЖАЛОСЬ")
             }
         )
 

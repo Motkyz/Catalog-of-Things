@@ -37,6 +37,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.6"
             android:layout_marginHorizontal="3dp"
+            android:maxLines="1"
 
             android:text="Название"
             android:layout_gravity="center"

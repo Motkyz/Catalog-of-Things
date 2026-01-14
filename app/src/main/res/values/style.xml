@@ -6,7 +6,7 @@
     </style>
 
     <style name="text.Header">
-        <item name="android:textSize">20dp</item>
+        <item name="android:textSize">18dp</item>
         <item name="android:background">@null</item>
     </style>
 
@@ -30,8 +30,8 @@
 
     <style name="infoAboutNote" parent="button">
         <item name="android:clickable">false</item>
-        <item name="android:textSize">18sp</item>
-        <item name="iconSize">30dp</item>
+        <item name="android:textSize">14sp</item>
+        <item name="iconSize">24dp</item>
     </style>
 
     <style name="text.NotFound" parent="text">

@@ -12,7 +12,8 @@ import com.example.catalogofthings.data.model.ImageEntity
 import com.example.catalogofthings.databinding.ImageInNoteItemBinding
 
 class ListImagesAdapter(
-    private val onImageClick: (ImageEntity) -> Unit = {}
+    private val onImageClick: (ImageEntity) -> Unit = {},
+    private val onImageLongClick: (ImageEntity) -> Unit = {}
 ) : RecyclerView.Adapter<ListImagesAdapter.ImageViewHolder>() {
 
     private val images = mutableListOf<ImageEntity>()
@@ -29,7 +30,15 @@ class ListImagesAdapter(
     override fun onBindViewHolder(holder: ImageViewHolder, position: Int) {
         val image = images[position]
         holder.bind(image)
-        holder.itemView.setOnClickListener { onImageClick(image) }
+
+        holder.itemView.setOnClickListener {
+            onImageClick(image)
+        }
+
+        holder.itemView.setOnLongClickListener {
+            onImageLongClick(image)
+            true
+        }
     }
 
     override fun getItemCount(): Int = images.size
