@@ -6,6 +6,7 @@ import com.example.catalogofthings.presenter.MainViewModel
 import com.example.catalogofthings.presenter.viewModels.ChooseTagsBottomSheetViewModel
 import com.example.catalogofthings.presenter.viewModels.FolderViewModel
 import com.example.catalogofthings.presenter.viewModels.NewTagViewModel
+import com.example.catalogofthings.presenter.viewModels.NoteFragmentViewModel
 import dagger.Binds
 import dagger.Module
 import dagger.multibindings.IntoMap
@@ -30,6 +31,13 @@ interface ViewModelModule {
     @ViewModelKey(FolderViewModel::class)
     fun bindFolderViewModel(
         viewModel: FolderViewModel
+    ): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(NoteFragmentViewModel::class)
+    fun bindNoteFragmentViewModel(
+        viewModel: NoteFragmentViewModel
     ): ViewModel
 
     @Binds

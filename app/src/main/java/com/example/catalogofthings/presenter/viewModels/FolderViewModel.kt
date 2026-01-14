@@ -21,22 +21,16 @@ class FolderViewModel @Inject constructor(
     private val updateNoteUseCase: UpdateNoteUseCase
 ): ViewModel() {
 
-//    init {
-//        getNotes(0)
-//    }
-
     private val _currentFolder = MutableLiveData<NoteWithTags?>()
     val currentFolder: LiveData<NoteWithTags?>
         get() = _currentFolder
 
     fun setFolder(id: Int) {
-        Log.d("Переход в папку", id.toString())
         viewModelScope.launch {
             val folder = getNoteUseCase(id)
             _currentFolder.postValue(
                 folder
             )
-            Log.d("Загрузил папку", folder.toString())
         }
     }
 
@@ -46,7 +40,6 @@ class FolderViewModel @Inject constructor(
 
     fun getNotes(id: Int) {
         viewModelScope.launch {
-            Log.d("Подгрузка заметок", id.toString())
             getNotesUseCase(id).collect {
                 _notes.postValue(it)
             }

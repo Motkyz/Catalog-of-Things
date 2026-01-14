@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil3.load
 import com.example.catalogofthings.R
-import com.example.catalogofthings.data.BitmapConverter
+import com.example.catalogofthings.data.ImageConverter
 import com.example.catalogofthings.data.model.NoteEntity
 import com.example.catalogofthings.databinding.NoteItemBinding
 
@@ -45,7 +45,7 @@ class ListNotesAdapter(
             val icon = if (item.isFolder)
                 R.drawable.ic_folder
             else
-                BitmapConverter.toBitmap(item.icon)
+                ImageConverter.toBitmap(item.icon)
                     ?: R.drawable.ic_no_image
 
             imageForElements.load(icon)
@@ -56,6 +56,9 @@ class ListNotesAdapter(
                 )
             }
             else if (icon != R.drawable.ic_folder) imageForElements.imageTintList = null
+            else imageForElements.imageTintList = ColorStateList.valueOf(
+                ContextCompat.getColor(itemView.context, R.color.accent)
+            )
             textForCountNote.text = if (item.isFolder) item.childrenCount.toString() else ""
             textForTitleNote.text = item.title
         }

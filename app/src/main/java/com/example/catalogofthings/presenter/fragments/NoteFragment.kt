@@ -3,24 +3,28 @@ package com.example.catalogofthings.presenter.fragments
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.catalogofthings.R
 import com.example.catalogofthings.appComponent
+import com.example.catalogofthings.data.ImageConverter
 import com.example.catalogofthings.data.model.ImageEntity
 import com.example.catalogofthings.data.model.NoteEntity
 import com.example.catalogofthings.data.model.NoteFull
 import com.example.catalogofthings.data.model.TagEntity
 import com.example.catalogofthings.databinding.FragmentNoteBinding
 import com.example.catalogofthings.di.viewModel.ViewModelFactory
-import com.example.catalogofthings.presenter.MainViewModel
 import com.example.catalogofthings.presenter.adapters.ListImagesAdapter
 import com.example.catalogofthings.presenter.adapters.ListTagsInNoteAdapter
+import com.example.catalogofthings.presenter.viewModels.NoteFragmentViewModel
 import dev.androidbroadcast.vbpd.viewBinding
 import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
@@ -34,42 +38,40 @@ class NoteFragment : Fragment(R.layout.fragment_note) {
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
 
-    private val viewModel: MainViewModel by viewModels { viewModelFactory }
+    private val viewModel: NoteFragmentViewModel by viewModels { viewModelFactory }
 
     private lateinit var tagsAdapter: ListTagsInNoteAdapter
     private lateinit var imagesAdapter: ListImagesAdapter
     private var isNewNote : Boolean = false
     private var oldNote : NoteEntity? = null
+    private var parentId: Int = 0
 
 //     Выбор изображения из галереи
     private val pickImageLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         uri?.let { uri ->
             lifecycleScope.launch {
-                val bytes = uriToByteArray(uri) ?: return@launch
+                val bytes = ImageConverter.toByteArray(requireContext(), uri)
+                    ?: return@launch
+
                 val newImage = ImageEntity(imageData = bytes)
                 viewModel.loadImage(newImage)
             }
         }
     }
 
-    private fun uriToByteArray(uri: Uri): ByteArray? {
-        return try {
-            requireContext().contentResolver.openInputStream(uri)?.use { input ->
-                ByteArrayOutputStream().use { output ->
-                    input.copyTo(output)
-                    output.toByteArray()
-                }
-            }
-        } catch (e: Exception) {
-            null
-        }
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val noteId = arguments?.getString("id")
-        isNewNote = noteId == "0"
+        val noteId = arguments?.getInt("id")
+        isNewNote = noteId == 0
+
+        parentId = arguments?.getInt("parentId") ?: 0
+        setFragmentResult(
+            "requestKey",
+            bundleOf(
+                "folderId" to parentId
+            )
+        )
 
         initAdapters()
         setupUI()
@@ -78,9 +80,10 @@ class NoteFragment : Fragment(R.layout.fragment_note) {
         if (isNewNote) {
             binding.dateCreateNote.text = "Только что"
             binding.includeHeaderNote.titleFolder.requestFocus()
-        } else {
-            viewModel.getNote(noteId!!.toInt())
+        } else if (noteId != null){
+            viewModel.getNote(noteId)
         }
+
         viewModel.note.observe(viewLifecycleOwner) { noteFull ->
             if (noteFull != null) {
                 oldNote = noteFull.note
@@ -156,7 +159,7 @@ class NoteFragment : Fragment(R.layout.fragment_note) {
                 description = description,
                 isFolder = false,
                 icon = image,
-                parentId = arguments?.getInt("parentId") ?: 0
+                parentId = parentId
             )
 
             if (isNewNote) {

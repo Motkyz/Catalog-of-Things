@@ -16,7 +16,6 @@ import com.example.catalogofthings.appComponent
 import com.example.catalogofthings.data.model.NoteEntity
 import com.example.catalogofthings.databinding.FragmentStartAppBinding
 import com.example.catalogofthings.di.viewModel.ViewModelFactory
-import com.example.catalogofthings.presenter.MainViewModel
 import com.example.catalogofthings.presenter.adapters.ListNotesAdapter
 import com.example.catalogofthings.presenter.viewModels.FolderViewModel
 import dev.androidbroadcast.vbpd.viewBinding
@@ -33,30 +32,12 @@ class StartFragment: Fragment(R.layout.fragment_start_app) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         viewModel.getNotes(0)
 
         adapter = ListNotesAdapter(
-            onNoteClick = { note ->
-                if (note.isFolder) {
-                    findNavController().navigate(
-                        R.id.action_startFragment_to_folderFragment,
-                        bundleOf(
-                            "id" to note.noteId
-                        )
-                    )
-                } else {
-                    findNavController().navigate(
-                        R.id.action_startFragment_to_noteFragment,
-                        bundleOf(
-                            "id" to note.noteId.toString()
-                        )
-                    )
-                }
-            },
-            onNoteLongClick = { note ->
-                // TODO Показать контекстное меню / удаление / перемещение и т.п.
-//                showNoteContextMenu(note)
-            },
+            onNoteClick = ::onNoteClick,
+            onNoteLongClick = ::onNoteLongClick
         )
 
         with(binding.includedRecyclerNotesStartFragment.recyclerNotes) {
@@ -64,18 +45,12 @@ class StartFragment: Fragment(R.layout.fragment_start_app) {
             adapter = this@StartFragment.adapter
         }
 
-        viewModel.notes.observe(viewLifecycleOwner) { notesWithTags ->
-            val noteEntities = notesWithTags?.map { it.note } ?: emptyList()
-            adapter.submitList(noteEntities)
-        }
-
         binding.addNew.setOnClickListener {
-            val parentId = viewModel.currentFolder.value?.note?.noteId ?: 0
             findNavController().navigate(
                 R.id.action_startFragment_to_noteFragment,
                 bundleOf(
-                    "id" to "0",
-                    "parentId" to parentId
+                    "id" to 0,
+                    "parentId" to 0
                 )
             )
         }
@@ -86,12 +61,39 @@ class StartFragment: Fragment(R.layout.fragment_start_app) {
                     title = "",
                     description = "",
                     isFolder = true,
-                    parentId = viewModel.currentFolder.value?.note?.noteId ?: 0
+                    parentId = 0
                 )
             )
             true
         }
 
+        viewModel.notes.observe(viewLifecycleOwner) { notesWithTags ->
+            val noteEntities = notesWithTags?.map { it.note } ?: emptyList()
+            adapter.submitList(noteEntities)
+        }
+    }
+
+    fun onNoteClick(note: NoteEntity) {
+        if (note.isFolder) {
+            findNavController().navigate(
+                R.id.action_startFragment_to_folderFragment,
+                bundleOf(
+                    "id" to note.noteId
+                )
+            )
+        } else {
+            findNavController().navigate(
+                R.id.action_startFragment_to_noteFragment,
+                bundleOf(
+                    "id" to note.noteId
+                )
+            )
+        }
+    }
+
+    fun onNoteLongClick(note: NoteEntity) {
+        // TODO Показать контекстное меню / удаление / перемещение и т.п.
+//                showNoteContextMenu(note)
     }
 
     override fun onAttach(context: Context) {

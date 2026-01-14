@@ -4,10 +4,12 @@ import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.EditText
 import androidx.core.os.bundleOf
 import com.example.catalogofthings.R
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.clearFragmentResult
+import androidx.fragment.app.setFragmentResult
+import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -15,11 +17,9 @@ import com.example.catalogofthings.appComponent
 import com.example.catalogofthings.data.model.NoteEntity
 import com.example.catalogofthings.databinding.FragmentOpenFolderBinding
 import com.example.catalogofthings.di.viewModel.ViewModelFactory
-import com.example.catalogofthings.presenter.MainViewModel
 import com.example.catalogofthings.presenter.adapters.ListNotesAdapter
 import com.example.catalogofthings.presenter.viewModels.FolderViewModel
 import dev.androidbroadcast.vbpd.viewBinding
-import java.lang.NullPointerException
 import javax.inject.Inject
 
 class FolderFragment : Fragment(R.layout.fragment_open_folder) {
@@ -38,8 +38,13 @@ class FolderFragment : Fragment(R.layout.fragment_open_folder) {
 
         val folderId = arguments?.getInt("id") ?: 0
 
-        if (folderId > 0) {
+        if (folderId > 0 && viewModel.currentFolder.value == null) {
             viewModel.setFolder(folderId)
+        }
+
+        setFragmentResultListener("requestKey") {requestKey, bundle ->
+            val folderId = bundle.getInt("folderId")
+            if (folderId > 0) viewModel.setFolder(folderId)
         }
 
         adapter = ListNotesAdapter(
@@ -57,7 +62,7 @@ class FolderFragment : Fragment(R.layout.fragment_open_folder) {
             findNavController().navigate(
                 R.id.action_folderFragment_to_noteFragment,
                 bundleOf(
-                    "id" to "0",
+                    "id" to 0,
                     "parentId" to parentId
                 )
             )
@@ -82,7 +87,7 @@ class FolderFragment : Fragment(R.layout.fragment_open_folder) {
             }
             else if (parent == 0) {
                 findNavController().popBackStack()
-                viewModel.setFolder(0)
+                viewModel.setFolder(parent)
             }
         }
 
@@ -101,12 +106,15 @@ class FolderFragment : Fragment(R.layout.fragment_open_folder) {
 
     fun onNoteClick(note: NoteEntity) {
         if (note.isFolder) {
+            val parent = viewModel.currentFolder.value?.note?.noteId
             viewModel.setFolder(note.noteId)
         } else {
+            val parent = viewModel.currentFolder.value?.note?.noteId
             findNavController().navigate(
                 R.id.action_folderFragment_to_noteFragment,
                 bundleOf(
-                    "id" to note.noteId.toString()
+                    "id" to note.noteId,
+                    "parentId" to parent
                 )
             )
         }
