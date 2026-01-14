@@ -9,10 +9,10 @@ import com.example.catalogofthings.data.model.NoteEntity
 import com.example.catalogofthings.data.model.NoteFull
 import com.example.catalogofthings.data.model.TagEntity
 import com.example.catalogofthings.domain.imagesUseCases.CreateImageUseCase
+import com.example.catalogofthings.domain.imagesUseCases.DeleteImageUseCase
 import com.example.catalogofthings.domain.notesUseCases.AddImageToNoteUseCase
 import com.example.catalogofthings.domain.notesUseCases.AddTagToNoteUseCase
 import com.example.catalogofthings.domain.notesUseCases.CreateNoteUseCase
-import com.example.catalogofthings.domain.notesUseCases.DeleteImageFromNoteUseCase
 import com.example.catalogofthings.domain.notesUseCases.DeleteTagFromNoteUseCase
 import com.example.catalogofthings.domain.notesUseCases.GetFullNoteUseCase
 import com.example.catalogofthings.domain.notesUseCases.UpdateNoteUseCase
@@ -25,7 +25,7 @@ class NoteFragmentViewModel @Inject constructor(
     private val updateNoteUseCase: UpdateNoteUseCase,
     private val createImageUseCase: CreateImageUseCase,
     private val addImageToNoteUseCase: AddImageToNoteUseCase,
-    private val deleteImageFromNoteUseCase: DeleteImageFromNoteUseCase,
+    private val deleteImageUseCase: DeleteImageUseCase,
     private val addTagToNoteUseCase: AddTagToNoteUseCase,
     private val deleteTagFromNoteUseCase: DeleteTagFromNoteUseCase,
 ): ViewModel() {
@@ -42,9 +42,6 @@ class NoteFragmentViewModel @Inject constructor(
 
             val list = fullNote?.images ?: listOf()
             _noteImages.postValue(
-                list.map { it.imageId }
-            )
-            _imagesData.postValue(
                 list
             )
 
@@ -63,7 +60,7 @@ class NoteFragmentViewModel @Inject constructor(
             viewModelScope.launch {
                 val noteId = createNoteUseCase(noteEntity)
                 for (image in _noteImages.value ?: listOf()) {
-                    addImageToNoteUseCase(noteId, image)
+                    addImageToNoteUseCase(noteId, image.imageId)
                 }
                 for (tag in _noteTags.value ?: listOf()) {
                     addTagToNoteUseCase(noteId, tag.tagId)
@@ -96,14 +93,14 @@ class NoteFragmentViewModel @Inject constructor(
                     addTagToNoteUseCase(oldNote.noteId, tag.tagId)
             }
 
-            val oldImages = note?.images?.map { it.imageId } ?: listOf()
+            val oldImages = note?.images ?: listOf()
             for (image in oldImages) {
                 if (!(_noteImages.value ?: listOf()).contains(image))
-                    deleteImageFromNoteUseCase(oldNote.noteId, image)
+                    deleteImageUseCase(image)
             }
             for (image in _noteImages.value ?: listOf()) {
                 if (!oldImages.contains(image)) {
-                    addImageToNoteUseCase(oldNote.noteId, image)
+                    addImageToNoteUseCase(oldNote.noteId, image.imageId)
                 }
             }
             _success.postValue(true)
@@ -125,22 +122,21 @@ class NoteFragmentViewModel @Inject constructor(
         _noteTags.postValue(newTags)
     }
 
-    private val _noteImages = MutableLiveData<List<Int>>()
-    val images : LiveData<List<Int>>
+    private val _noteImages = MutableLiveData<List<ImageEntity>>()
+    val noteImages : LiveData<List<ImageEntity>>
         get() = _noteImages
-
-    private val _imagesData = MutableLiveData<List<ImageEntity>>()
-    val imagesData : LiveData<List<ImageEntity>>
-        get() = _imagesData
 
     fun loadImage(image : ImageEntity){
         viewModelScope.launch {
             val imageId = createImageUseCase(image)
-            val currentList = _noteImages.value ?: emptyList()
-            _noteImages.postValue(currentList + imageId)
 
-            val list = _imagesData.value ?: emptyList()
-            _imagesData.postValue(list + image)
+            val createdImage = ImageEntity(
+                imageId,
+                image.imageData
+            )
+
+            val currentList = _noteImages.value ?: emptyList()
+            _noteImages.postValue(currentList + createdImage)
         }
     }
 }

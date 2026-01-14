@@ -3,7 +3,6 @@ package com.example.catalogofthings.presenter.fragments
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.os.bundleOf
@@ -27,7 +26,6 @@ import com.example.catalogofthings.presenter.adapters.ListTagsInNoteAdapter
 import com.example.catalogofthings.presenter.viewModels.NoteFragmentViewModel
 import dev.androidbroadcast.vbpd.viewBinding
 import kotlinx.coroutines.launch
-import java.io.ByteArrayOutputStream
 import java.util.Date
 import javax.inject.Inject
 
@@ -95,7 +93,7 @@ class NoteFragment : Fragment(R.layout.fragment_note) {
             tagsAdapter.submitList(it)
         }
 
-        viewModel.imagesData.observe(viewLifecycleOwner) {
+        viewModel.noteImages.observe(viewLifecycleOwner) {
             imagesAdapter.submitList(it)
         }
     }
@@ -145,14 +143,15 @@ class NoteFragment : Fragment(R.layout.fragment_note) {
             val description = binding.edittextForDescriptionNote.text?.toString()?.trim() ?: ""
 
             if (title.isBlank() && description.isBlank() &&
-                viewModel.images.value?.isEmpty() == true) {
+                viewModel.noteImages.value?.isEmpty() == true &&
+                viewModel.noteTags.value?.isEmpty() == true) {
                 findNavController().popBackStack()
                 return@setOnClickListener
             }
 
             val image =
-                if (viewModel.imagesData.value.isNullOrEmpty()) null
-                else viewModel.imagesData.value?.get(0)?.imageData
+                if (viewModel.noteImages.value.isNullOrEmpty()) null
+                else viewModel.noteImages.value?.get(0)?.imageData
 
             val updatedNote = NoteEntity(
                 title = title,
