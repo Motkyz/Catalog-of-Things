@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.core.os.bundleOf
+import androidx.core.widget.doAfterTextChanged
 import com.example.catalogofthings.R
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.clearFragmentResult
@@ -42,6 +43,18 @@ class FolderFragment : Fragment(R.layout.fragment_open_folder) {
             viewModel.setFolder(folderId)
         }
 
+        if (folderId == -1) {
+            val parentId = arguments?.getInt("parentId") ?: 0
+            viewModel.createFolder(
+                NoteEntity(
+                    title = "",
+                    description = "",
+                    isFolder = true,
+                    parentId = parentId
+                )
+            )
+        }
+
         setFragmentResultListener("requestKey") {requestKey, bundle ->
             val folderId = bundle.getInt("folderId")
             if (folderId > 0) viewModel.setFolder(folderId)
@@ -69,15 +82,19 @@ class FolderFragment : Fragment(R.layout.fragment_open_folder) {
         }
 
         binding.addNewFolder.setOnLongClickListener {
-            viewModel.createFolder(
-                NoteEntity(
-                    title = "",
-                    description = "",
-                    isFolder = true,
-                    parentId = viewModel.currentFolder.value?.note?.noteId ?: 0
+            val parentId = viewModel.currentFolder.value?.note?.noteId ?: 0
+            findNavController().navigate(
+                R.id.action_folderFragment_self,
+                bundleOf(
+                    "id" to -1,
+                    "parentId" to parentId
                 )
             )
             true
+        }
+
+        binding.includeHeaderFolder.titleFolder.doAfterTextChanged {
+            updateFolder(it.toString())
         }
 
         binding.includeHeaderFolder.icBackArrow.setOnClickListener {
@@ -126,6 +143,20 @@ class FolderFragment : Fragment(R.layout.fragment_open_folder) {
     fun onNoteLongClick(note: NoteEntity) {
         // TODO Показать контекстное меню / удаление / перемещение и т.п.
 //                showNoteContextMenu(note)
+    }
+
+    fun updateFolder(title: String) {
+        val thisFolder = viewModel.currentFolder.value?.note
+        val newFolder = NoteEntity(
+            title = title,
+            description = "",
+            parentId = thisFolder?.parentId ?: 0
+        )
+
+        viewModel.updateFolder(
+            thisFolder ?: newFolder,
+            newFolder
+        )
     }
 
     override fun onAttach(context: Context) {

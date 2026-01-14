@@ -56,12 +56,12 @@ class StartFragment: Fragment(R.layout.fragment_start_app) {
         }
 
         binding.addNew.setOnLongClickListener {
-            viewModel.createFolder(
-                NoteEntity(
-                    title = "",
-                    description = "",
-                    isFolder = true,
-                    parentId = 0
+
+            findNavController().navigate(
+                R.id.action_startFragment_to_folderFragment,
+                bundleOf(
+                    "id" to -1,
+                    "parentId" to 0
                 )
             )
             true
