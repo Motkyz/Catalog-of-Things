@@ -8,6 +8,7 @@ import javax.inject.Inject
 interface TagsRepository {
     suspend fun createTag(tagEntity: TagEntity): Int
     fun getAllTags(): Flow<List<TagEntity>>
+    suspend fun getTag(id: Int): TagEntity?
     suspend fun updateTag(tagEntityOld: TagEntity, tagEntityNew: TagEntity)
     suspend fun deleteTag(tagEntity: TagEntity): Int
 }
@@ -23,6 +24,9 @@ class TagsRepositoryImpl @Inject constructor(
 
     override fun getAllTags(): Flow<List<TagEntity>> =
         dao.getAllTags()
+
+    override suspend fun getTag(id: Int): TagEntity? =
+        dao.getTag(id)
 
     override suspend fun updateTag(
         tagEntityOld: TagEntity,

@@ -3,6 +3,7 @@ package com.example.catalogofthings.presenter.fragments
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.os.bundleOf

@@ -39,6 +39,8 @@ import com.example.catalogofthings.domain.tagsUseCases.CreateTagUseCase
 import com.example.catalogofthings.domain.tagsUseCases.CreateTagUseCaseImpl
 import com.example.catalogofthings.domain.tagsUseCases.DeleteTagUseCase
 import com.example.catalogofthings.domain.tagsUseCases.DeleteTagUseCaseImpl
+import com.example.catalogofthings.domain.tagsUseCases.GetTagUseCase
+import com.example.catalogofthings.domain.tagsUseCases.GetTagUseCaseImpl
 import com.example.catalogofthings.domain.tagsUseCases.GetTagsUseCase
 import com.example.catalogofthings.domain.tagsUseCases.GetTagsUseCaseImpl
 import com.example.catalogofthings.domain.tagsUseCases.UpdateTagUseCase
@@ -92,6 +94,10 @@ interface AppBindsModule {
     @Binds
     @Singleton
     fun bindGetTagsUseCase(impl: GetTagsUseCaseImpl): GetTagsUseCase
+
+    @Binds
+    @Singleton
+    fun bindGetTagUseCase(impl: GetTagUseCaseImpl): GetTagUseCase
 
     @Binds
     @Singleton
