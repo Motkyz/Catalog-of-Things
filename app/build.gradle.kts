@@ -14,7 +14,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.catalogofthings"
-        minSdk = 24
+        minSdk = 29
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
@@ -67,4 +67,9 @@ dependencies {
     implementation("androidx.room:room-runtime:2.8.4")
     implementation("androidx.room:room-ktx:2.8.4")
     ksp("androidx.room:room-compiler:2.8.4")
+
+    implementation("io.coil-kt.coil3:coil:3.3.0")
+
+    implementation("com.github.dhaval2404:imagepicker:2.1")
+    implementation("com.github.Dhaval2404:ColorPicker:2.3")
 }

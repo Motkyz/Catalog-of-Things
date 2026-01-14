@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="text">
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="text.Header">
+        <item name="android:textSize">20dp</item>
+        <item name="android:background">@null</item>
+    </style>
+
+    <style name="search" parent="text">
+        <item name="android:background">@drawable/edit_text_border</item>
+        <item name="android:padding">12dp</item>
+        <item name="android:textColorHint">@color/backgroundElements</item>
+        <item name="android:drawablePadding">12dp</item>
+        <item name="android:drawableTint">@color/backgroundElements</item>
+        <item name="android:inputType">text</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:hint">Строка поиска</item>
+    </style>
+
+    <style name="button" parent="text">
+        <item name="backgroundTint">@android:color/transparent</item>
+        <item name="iconTint">@color/backgroundElements</item>
+        <item name="iconSize">35dp</item>
+        <item name="android:textColor">@color/darkGrey</item>
+    </style>
+
+    <style name="infoAboutNote" parent="button">
+        <item name="android:clickable">false</item>
+        <item name="android:textSize">18sp</item>
+        <item name="iconSize">30dp</item>
+    </style>
+
+    <style name="text.NotFound" parent="text">
+        <item name="android:text">Здесь пусто</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">@color/backgroundElements</item>
+        <item name="android:textAlignment">center</item>
+    </style>
+
+    <style name="FullscreenTransparentDialog" parent="Theme.Material3.DayNight.Dialog">
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
+    </style>
+
+</resources>

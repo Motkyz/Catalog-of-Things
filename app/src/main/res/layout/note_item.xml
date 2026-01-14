@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="70dp"
+    android:layout_margin="4dp"
+
+    app:cardBackgroundColor="@color/white"
+    app:cardCornerRadius="10dp"
+    app:strokeWidth="1dp"
+    app:strokeColor="@color/border">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:minHeight="70dp"
+        android:orientation="horizontal"
+        android:padding="5dp">
+
+        <ImageView
+            android:id="@+id/image_for_elements"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.1"
+            android:layout_marginHorizontal="3dp"
+
+            android:src="@drawable/ic_folder"
+            app:tint="@color/accent">
+        </ImageView>
+
+        <TextView
+            android:id="@+id/text_for_title_note"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.6"
+            android:layout_marginHorizontal="3dp"
+
+            android:text="Название"
+            android:layout_gravity="center"
+            style="@style/text">
+        </TextView>
+
+        <TextView
+            android:id="@+id/text_for_count_note"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.1"
+            android:layout_marginHorizontal="3dp"
+
+            android:text="7"
+            android:textAlignment="center"
+            android:layout_gravity="center"
+            style="@style/text">
+        </TextView>
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView >

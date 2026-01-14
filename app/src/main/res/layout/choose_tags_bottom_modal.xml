@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:paddingHorizontal="24dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:text="Выбрать тег"
+        android:layout_marginBottom="16dp"
+        style="@style/text.Header">
+    </TextView>
+
+    <Button
+        android:id="@+id/create_new_tag"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:layout_marginVertical="10dp"
+
+        style="@style/button"
+        android:text="Добавить новый тег"
+        app:icon="@drawable/ic_add"
+        android:textAlignment="textStart">
+    </Button>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_choose_tags_bottom_modal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        tools:itemCount="5"
+        tools:listitem="@layout/tag_item"
+
+        android:layout_gravity="center">
+    </androidx.recyclerview.widget.RecyclerView>
+
+</LinearLayout>
