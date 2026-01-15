@@ -2,6 +2,7 @@ package com.example.catalogofthings.di
 
 import android.app.Application
 import com.example.catalogofthings.di.viewModel.ViewModelModule
+import com.example.catalogofthings.presenter.fragments.BaseFolderFragment
 import com.example.catalogofthings.presenter.fragments.ChooseFolderBottomSheet
 import com.example.catalogofthings.presenter.fragments.ChooseTagsBottomSheet
 import com.example.catalogofthings.presenter.fragments.CreateFolderBottomSheet
