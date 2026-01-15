@@ -19,8 +19,10 @@ import com.example.catalogofthings.data.model.NoteEntity
 import com.example.catalogofthings.data.model.TagEntity
 import com.example.catalogofthings.databinding.FragmentOpenFolderBinding
 import com.example.catalogofthings.di.viewModel.ViewModelFactory
+import com.example.catalogofthings.enums.SortingVariantsEnum
 import com.example.catalogofthings.presenter.actionDialog.NoteActionDialog
 import com.example.catalogofthings.presenter.adapters.ListNotesAdapter
+import com.example.catalogofthings.presenter.adapters.SortingSpinnerAdapter
 import com.example.catalogofthings.presenter.adapters.TagSpinnerAdapter
 import com.example.catalogofthings.presenter.viewModels.FolderViewModel
 import com.google.android.material.button.MaterialButton
@@ -31,6 +33,9 @@ class FolderFragment : Fragment(R.layout.fragment_open_folder) {
 
     private lateinit var tagSpinner: Spinner
     private lateinit var tagAdapter: TagSpinnerAdapter
+
+    private lateinit var variantSpinner: Spinner
+    private lateinit var variantAdapter: SortingSpinnerAdapter
 
     private val binding: FragmentOpenFolderBinding by viewBinding(FragmentOpenFolderBinding::bind)
 
@@ -201,7 +206,30 @@ class FolderFragment : Fragment(R.layout.fragment_open_folder) {
 
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
-    }
+
+        variantSpinner = binding.includeSearchBarFolderFragment.buttonSortInFolder
+
+        variantAdapter = SortingSpinnerAdapter(requireContext())
+        variantAdapter.setOnVariantClick(::onVariantClick)
+        variantSpinner.adapter = variantAdapter
+
+        variantSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                val selectedVariant = variantAdapter.getItem(position)
+
+                if (view is MaterialButton) {
+                    if (selectedVariant == null) {
+                        view.text = SortingVariantsEnum.ON_CREATE_DATE.variant
+                    } else {
+                        view.text = selectedVariant.variant
+                    }
+                }
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
+        }
+
+        
 
     private fun setBindings(){
         binding.addNewFolder.setOnClickListener {
