@@ -10,7 +10,9 @@ import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 import com.example.catalogofthings.data.model.NoteTagCrossRef
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 
 interface NotesRepository {
@@ -50,8 +52,16 @@ class NotesRepositoryImpl @Inject constructor(
     override suspend fun getNote(id: Int): NoteWithTags? =
         dao.getNote(id)
 
-    override fun getAllFolders(id : Int): Flow<List<NoteEntity>> =
-        dao.getAllFolders(id)
+    override fun getAllFolders(id : Int): Flow<List<NoteEntity>> {
+        val notChildrenFolders = dao.getAllFolders().map {list ->
+            list.filter {folder ->
+                !folder.location.split("/").contains(id.toString())
+                        && folder.noteId != id
+            }
+        }
+
+        return notChildrenFolders
+    }
 
     override suspend fun getFullNote(id: Int): NoteFull? =
         dao.getFullNote(id)
@@ -60,23 +70,32 @@ class NotesRepositoryImpl @Inject constructor(
         oldNote: NoteEntity,
         newNote: NoteEntity
     ) {
+        //Получаем "ссылку" на местоположение
+        val location = buildLocation(getParent(newNote.parentId))
+
         dao.upsertNote(
             oldNote.copy(
                 title = newNote.title,
                 description = newNote.description,
                 date = newNote.date,
+                location = location,
                 parentId = newNote.parentId,
                 icon = newNote.icon
             )
         )
 
         if (oldNote.parentId != newNote.parentId) {
-            updateChildrenCount(oldNote.parentId)
-            updateChildrenCount(newNote.parentId)
+            if (oldNote.parentId != 0) updateChildrenCount(oldNote.parentId)
+            if (newNote.parentId != 0) updateChildrenCount(newNote.parentId)
         }
     }
 
     override suspend fun createNote(noteEntity: NoteEntity): Int {
+        //Получаем "ссылку" на местоположение
+        val parentNote = getParent(noteEntity.parentId)
+        val location = buildLocation(parentNote)
+        noteEntity.location = location
+
         val noteId = dao.upsertNote(
             noteEntity
         ).toInt()
@@ -156,4 +175,10 @@ class NotesRepositoryImpl @Inject constructor(
             }
         }
     }
+
+    private suspend fun getParent(id: Int): NoteEntity? =
+        dao.getNoteWithOutTags(id)
+
+    private fun buildLocation(parentNote: NoteEntity?): String =
+        "${parentNote?.location ?: ""}${parentNote?.noteId ?: 0}/"
 }

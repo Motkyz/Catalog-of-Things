@@ -18,7 +18,7 @@ class CreateFolderBottomSheet : BottomSheetDialogFragment() {
     private val binding get() = _binding!!
 
     private var parentId: Int = 0
-    private var onFolderCreated: ((NoteEntity) -> Unit)? = null
+    private var onFolderCreated: ((NoteEntity) -> Unit) = {}
 
     companion object {
         private const val ARG_PARENT_ID = "arg_parent_id"
@@ -72,7 +72,7 @@ class CreateFolderBottomSheet : BottomSheetDialogFragment() {
                 parentId = parentId
             )
 
-            onFolderCreated?.invoke(newFolder)
+            onFolderCreated(newFolder)
             dismiss()
         }
     }
