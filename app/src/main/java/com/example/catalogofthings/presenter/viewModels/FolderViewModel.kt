@@ -24,7 +24,7 @@ class FolderViewModel @Inject constructor(
     private val getNotesByFiltersUseCase: GetNotesByFiltersUseCase,
     private val createNoteUseCase: CreateNoteUseCase,
     private val updateNoteUseCase: UpdateNoteUseCase,
-    private val getTagsUseCase: GetTagsUseCase
+    private val getTagsUseCase: GetTagsUseCase,
     private val deleteNoteUseCase: DeleteNoteUseCase
 ): ViewModel() {
 
