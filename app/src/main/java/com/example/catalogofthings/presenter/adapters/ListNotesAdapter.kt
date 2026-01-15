@@ -59,7 +59,6 @@ class ListNotesAdapter(
             else imageForElements.imageTintList = ColorStateList.valueOf(
                 ContextCompat.getColor(itemView.context, R.color.accent)
             )
-            textForCountNote.text = if (item.isFolder) item.childrenCount.toString() else ""
             textForTitleNote.text = item.title
         }
     }

@@ -6,7 +6,7 @@
     </style>
 
     <style name="text.Header">
-        <item name="android:textSize">20dp</item>
+        <item name="android:textSize">18dp</item>
         <item name="android:background">@null</item>
     </style>
 
@@ -30,8 +30,8 @@
 
     <style name="infoAboutNote" parent="button">
         <item name="android:clickable">false</item>
-        <item name="android:textSize">18sp</item>
-        <item name="iconSize">30dp</item>
+        <item name="android:textSize">14sp</item>
+        <item name="iconSize">24dp</item>
     </style>
 
     <style name="text.NotFound" parent="text">
@@ -46,6 +46,17 @@
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowFullscreen">true</item>
+    </style>
+
+    <style name="spinnerWithSmallArrow" parent="Widget.AppCompat.Spinner">
+        <item name="android:backgroundTintMode">src_in</item>
+
+        <item name="android:paddingEnd">34dp</item>
+        <item name="android:drawablePadding">1dp</item>
+
+        <item name="android:popupBackground">@drawable/spinner_dropdown_background</item>
+        <item name="android:spinnerMode">dropdown</item>
+        <item name="android:gravity">end|center_vertical</item>
     </style>
 
 </resources>

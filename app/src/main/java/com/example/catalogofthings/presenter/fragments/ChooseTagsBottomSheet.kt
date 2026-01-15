@@ -2,10 +2,10 @@ package com.example.catalogofthings.presenter.fragments
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import com.example.catalogofthings.R
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -14,6 +14,7 @@ import com.example.catalogofthings.appComponent
 import com.example.catalogofthings.data.model.TagEntity
 import com.example.catalogofthings.databinding.ChooseTagsBottomModalBinding
 import com.example.catalogofthings.di.viewModel.ViewModelFactory
+import com.example.catalogofthings.presenter.actionDialog.TagActionsDialog
 import com.example.catalogofthings.presenter.adapters.ListTagsInNoteAdapter
 import com.example.catalogofthings.presenter.viewModels.ChooseTagsBottomSheetViewModel
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -75,8 +76,13 @@ class ChooseTagsBottomSheet : BottomSheetDialogFragment(R.layout.choose_tags_bot
             context = requireContext(),
             tag = tag,
             onDelete = {
-                // TODO
-                Log.d("onLongTagClick", "ТИпа тег $tag удалился")
+                viewModel.deleteTag(tag)
+            },
+            onEdit = {
+                findNavController().navigate(
+                    R.id.action_noteFragment_to_newTagFragment,
+                    bundleOf("id" to tag.tagId)
+                )
             }
         )
     }

@@ -6,17 +6,27 @@ import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 interface TagsRepository {
+    suspend fun createTag(tagEntity: TagEntity): Int
     fun getAllTags(): Flow<List<TagEntity>>
+    suspend fun getTag(id: Int): TagEntity?
     suspend fun updateTag(tagEntityOld: TagEntity, tagEntityNew: TagEntity)
-    suspend fun createTag(tagEntity: TagEntity)
+    suspend fun deleteTag(tagEntity: TagEntity): Int
 }
 
 class TagsRepositoryImpl @Inject constructor(
     private val dao: NotesDAO
 ): TagsRepository {
-    override fun getAllTags(): Flow<List<TagEntity>> {
-        return dao.getAllTags()
-    }
+
+    override suspend fun createTag(tagEntity: TagEntity): Int =
+        dao.upsertTag(
+            tagEntity
+        ).toInt()
+
+    override fun getAllTags(): Flow<List<TagEntity>> =
+        dao.getAllTags()
+
+    override suspend fun getTag(id: Int): TagEntity? =
+        dao.getTag(id)
 
     override suspend fun updateTag(
         tagEntityOld: TagEntity,
@@ -30,10 +40,6 @@ class TagsRepositoryImpl @Inject constructor(
         )
     }
 
-    override suspend fun createTag(tagEntity: TagEntity) {
-        dao.upsertTag(
-            tagEntity
-        )
-    }
-
+    override suspend fun deleteTag(tagEntity: TagEntity): Int =
+        dao.deleteTag(tagEntity)
 }

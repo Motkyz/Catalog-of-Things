@@ -22,8 +22,31 @@ interface NotesDAO {
     suspend fun upsertNote(noteEntity: NoteEntity): Long
 
     @Transaction
-    @Query("SELECT * FROM ${NoteEntity.TABLE} WHERE parentId = :parentId ORDER BY noteId")
+    @Query("SELECT * FROM ${NoteEntity.TABLE} " +
+            "WHERE parentId = :parentId ORDER BY noteId")
     fun getNotes(parentId: Int = 0): Flow<List<NoteWithTags>>
+
+
+    @Transaction
+    @Query("SELECT * FROM ${NoteEntity.TABLE} " +
+            "WHERE title LIKE '%' || :search || '%' " +
+            "ORDER BY noteId")
+    fun getNotesBySearch(search: String): Flow<List<NoteWithTags>>
+
+    @Transaction
+    @Query("SELECT * FROM ${NoteEntity.TABLE} ne " +
+            "JOIN ${NoteTagCrossRef.TABLE} nt ON ne.noteId = nt.noteId " +
+            "AND nt.tagId = :tagId " +
+            "ORDER BY noteId")
+    fun getNotesByTag(tagId: Int): Flow<List<NoteWithTags>>
+
+    @Transaction
+    @Query("SELECT * FROM ${NoteEntity.TABLE} ne " +
+            "JOIN ${NoteTagCrossRef.TABLE} nt ON ne.noteId = nt.noteId " +
+            "WHERE title LIKE '%' || :search || '%' " +
+            "AND nt.tagId = :tagId " +
+            "ORDER BY noteId")
+    fun getNotesByFilters(search: String, tagId: Int): Flow<List<NoteWithTags>>
 
     @Query("SELECT * FROM ${NoteEntity.TABLE} WHERE noteId = :id")
     suspend fun getNoteWithOutTags(id: Int): NoteEntity?
@@ -37,20 +60,26 @@ interface NotesDAO {
     suspend fun getFullNote(id: Int): NoteFull?
 
     @Delete
-    suspend fun deleteNote(noteEntity: NoteEntity)
+    suspend fun deleteNote(noteEntity: NoteEntity): Int
 
     @Query("SELECT COUNT() FROM ${NoteEntity.TABLE} WHERE parentId = :parentId")
     suspend fun getChildrenCount(parentId: Int): Int
 
+    @Query("SELECT * FROM ${NoteEntity.TABLE} WHERE isFolder = 1")
+    fun getAllFolders(): Flow<List<NoteEntity>>
+
     //Tags
     @Upsert
-    suspend fun upsertTag(tagEntity: TagEntity)
+    suspend fun upsertTag(tagEntity: TagEntity): Long
 
     @Query("SELECT * FROM ${TagEntity.TABLE} ORDER BY title")
     fun getAllTags(): Flow<List<TagEntity>>
 
+    @Query("SELECT * FROM ${TagEntity.TABLE} WHERE tagId = :id")
+    suspend fun getTag(id: Int): TagEntity?
+
     @Delete
-    suspend fun deleteTag(tagEntity: TagEntity)
+    suspend fun deleteTag(tagEntity: TagEntity): Int
 
     //Images
     @Upsert
@@ -75,9 +104,6 @@ interface NotesDAO {
     //NoteImages
     @Upsert
     suspend fun addNoteImage(noteImageCrossRef: NoteImageCrossRef)
-
-    @Delete
-    suspend fun deleteNoteImage(noteImageCrossRef: NoteImageCrossRef)
 
     @Query("DELETE FROM ${NoteImageCrossRef.TABLE} WHERE noteId = :noteId")
     suspend fun deleteNoteImages(noteId: Int)

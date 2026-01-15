@@ -7,7 +7,6 @@ import androidx.room.Entity
 import androidx.room.Junction
 import androidx.room.PrimaryKey
 import androidx.room.Relation
-import com.google.android.material.datepicker.MaterialDatePicker
 
 @Entity(tableName = NoteEntity.TABLE)
 data class NoteEntity (
@@ -15,10 +14,11 @@ data class NoteEntity (
     val noteId: Int = 0,
     val title: String,
     val isFolder: Boolean = false,
-    val description: String,
-    val date: Long = MaterialDatePicker.todayInUtcMilliseconds(),
+    val description: String = "",
+    val date: Long = System.currentTimeMillis(),
 
-    val parentId: Int = 0,
+    var location: String = "",
+    val parentId: Int,
     val childrenCount: Int = 0,
 
     @ColumnInfo(typeAffinity = BLOB)

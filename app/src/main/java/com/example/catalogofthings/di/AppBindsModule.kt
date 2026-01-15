@@ -23,22 +23,32 @@ import com.example.catalogofthings.domain.notesUseCases.AddTagToNoteUseCase
 import com.example.catalogofthings.domain.notesUseCases.AddTagToNoteUseCaseImpl
 import com.example.catalogofthings.domain.notesUseCases.CreateNoteUseCase
 import com.example.catalogofthings.domain.notesUseCases.CreateNoteUseCaseImpl
-import com.example.catalogofthings.domain.notesUseCases.DeleteImageFromNoteUseCase
-import com.example.catalogofthings.domain.notesUseCases.DeleteImageFromNoteUseCaseImpl
+import com.example.catalogofthings.domain.notesUseCases.DeleteNoteUseCase
+import com.example.catalogofthings.domain.notesUseCases.DeleteNoteUseCaseImpl
 import com.example.catalogofthings.domain.notesUseCases.DeleteTagFromNoteUseCase
 import com.example.catalogofthings.domain.notesUseCases.DeleteTagFromNoteUseCaseImpl
+import com.example.catalogofthings.domain.notesUseCases.GetAllFoldersUseCase
+import com.example.catalogofthings.domain.notesUseCases.GetAllFoldersUseCaseImpl
 import com.example.catalogofthings.domain.notesUseCases.GetFullNoteUseCase
 import com.example.catalogofthings.domain.notesUseCases.GetFullNoteUseCaseImpl
 import com.example.catalogofthings.domain.notesUseCases.GetNoteUseCase
 import com.example.catalogofthings.domain.notesUseCases.GetNoteUseCaseImpl
+import com.example.catalogofthings.domain.notesUseCases.GetNotesByFiltersUseCase
+import com.example.catalogofthings.domain.notesUseCases.GetNotesByFiltersUseCaseImpl
 import com.example.catalogofthings.domain.notesUseCases.GetNotesUseCase
 import com.example.catalogofthings.domain.notesUseCases.GetNotesUseCaseImpl
 import com.example.catalogofthings.domain.notesUseCases.UpdateNoteUseCase
 import com.example.catalogofthings.domain.notesUseCases.UpdateNoteUseCaseImpl
 import com.example.catalogofthings.domain.tagsUseCases.CreateTagUseCase
 import com.example.catalogofthings.domain.tagsUseCases.CreateTagUseCaseImpl
+import com.example.catalogofthings.domain.tagsUseCases.DeleteTagUseCase
+import com.example.catalogofthings.domain.tagsUseCases.DeleteTagUseCaseImpl
+import com.example.catalogofthings.domain.tagsUseCases.GetTagUseCase
+import com.example.catalogofthings.domain.tagsUseCases.GetTagUseCaseImpl
 import com.example.catalogofthings.domain.tagsUseCases.GetTagsUseCase
 import com.example.catalogofthings.domain.tagsUseCases.GetTagsUseCaseImpl
+import com.example.catalogofthings.domain.tagsUseCases.UpdateTagUseCase
+import com.example.catalogofthings.domain.tagsUseCases.UpdateTagUseCaseImpl
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -62,7 +72,14 @@ interface AppBindsModule {
 
     @Binds
     @Singleton
+    fun bindGetNotesByFiltersUseCase(impl: GetNotesByFiltersUseCaseImpl): GetNotesByFiltersUseCase
+    @Binds
+    @Singleton
     fun bindGetNoteUseCase(impl: GetNoteUseCaseImpl): GetNoteUseCase
+
+    @Binds
+    @Singleton
+    fun bindGetAllFoldersUseCase(impl: GetAllFoldersUseCaseImpl): GetAllFoldersUseCase
 
     @Binds
     @Singleton
@@ -71,6 +88,10 @@ interface AppBindsModule {
     @Binds
     @Singleton
     fun bindUpdateNoteUseCase(impl: UpdateNoteUseCaseImpl): UpdateNoteUseCase
+
+    @Binds
+    @Singleton
+    fun bindDeleteNoteUseCase(impl: DeleteNoteUseCaseImpl): DeleteNoteUseCase
 
     //Tags
     @Binds
@@ -85,6 +106,18 @@ interface AppBindsModule {
     @Singleton
     fun bindGetTagsUseCase(impl: GetTagsUseCaseImpl): GetTagsUseCase
 
+    @Binds
+    @Singleton
+    fun bindGetTagUseCase(impl: GetTagUseCaseImpl): GetTagUseCase
+
+    @Binds
+    @Singleton
+    fun bindUpdateTagUseCase(impl: UpdateTagUseCaseImpl): UpdateTagUseCase
+
+    @Binds
+    @Singleton
+    fun bindDeleteTagUseCase(impl: DeleteTagUseCaseImpl): DeleteTagUseCase
+
     //Images
     @Binds
     @Singleton
@@ -96,11 +129,11 @@ interface AppBindsModule {
 
     @Binds
     @Singleton
-    fun bindDeleteImageUseCase(impl: DeleteImageUseCaseImpl): DeleteImageUseCase
+    fun bindGetImageUseCase(impl: GetImageUseCaseImpl): GetImageUseCase
 
     @Binds
     @Singleton
-    fun bindGetImageUseCase(impl: GetImageUseCaseImpl): GetImageUseCase
+    fun bindDeleteImageUseCase(impl: DeleteImageUseCaseImpl): DeleteImageUseCase
 
     //NoteTags
     @Binds
@@ -115,10 +148,6 @@ interface AppBindsModule {
     @Binds
     @Singleton
     fun bindAddImageToNoteUseCase(impl: AddImageToNoteUseCaseImpl): AddImageToNoteUseCase
-
-    @Binds
-    @Singleton
-    fun bindDeleteImageFromNoteUseCase(impl: DeleteImageFromNoteUseCaseImpl): DeleteImageFromNoteUseCase
 
     companion object {
         @Provides

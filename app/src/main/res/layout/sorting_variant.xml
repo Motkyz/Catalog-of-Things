@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.button.MaterialButton
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+
+    android:id="@+id/sorting_variant"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    app:layout_constraintTop_toBottomOf="@id/search_in_folder_fragment"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintHorizontal_chainStyle="spread_inside"
+
+    style="@style/button"
+    android:paddingStart="5dp"
+    android:paddingEnd="0dp"
+
+    android:text="По типу"
+    android:gravity="left|center_vertical">
+</com.google.android.material.button.MaterialButton>

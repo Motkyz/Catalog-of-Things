@@ -22,12 +22,12 @@ import com.example.catalogofthings.data.model.NoteFull
 import com.example.catalogofthings.data.model.TagEntity
 import com.example.catalogofthings.databinding.FragmentNoteBinding
 import com.example.catalogofthings.di.viewModel.ViewModelFactory
+import com.example.catalogofthings.presenter.actionDialog.ImageActionsDialog
 import com.example.catalogofthings.presenter.adapters.ListImagesAdapter
 import com.example.catalogofthings.presenter.adapters.ListTagsInNoteAdapter
 import com.example.catalogofthings.presenter.viewModels.NoteFragmentViewModel
 import dev.androidbroadcast.vbpd.viewBinding
 import kotlinx.coroutines.launch
-import java.io.ByteArrayOutputStream
 import java.util.Date
 import javax.inject.Inject
 
@@ -75,7 +75,7 @@ class NoteFragment : Fragment(R.layout.fragment_note) {
 
         initAdapters()
         setupUI()
-        setupListeners()
+        setupBindings()
 
         if (isNewNote) {
             binding.dateCreateNote.text = "Только что"
@@ -95,7 +95,7 @@ class NoteFragment : Fragment(R.layout.fragment_note) {
             tagsAdapter.submitList(it)
         }
 
-        viewModel.imagesData.observe(viewLifecycleOwner) {
+        viewModel.noteImages.observe(viewLifecycleOwner) {
             imagesAdapter.submitList(it)
         }
     }
@@ -121,6 +121,15 @@ class NoteFragment : Fragment(R.layout.fragment_note) {
                 val bytes = it.imageData
                 FullscreenImageDialog.newInstance(bytes!!)
                     .show(parentFragmentManager, "fullscreen_image")
+            },
+            onImageLongClick = {
+                Log.d("onImageLongClick", "НАЖАЛОСЬ")
+                ImageActionsDialog.show(
+                    context = requireContext(),
+                    onAccept = {
+                        (::deleteImage)(it)
+                    }
+                )
             }
         )
 
@@ -145,14 +154,15 @@ class NoteFragment : Fragment(R.layout.fragment_note) {
             val description = binding.edittextForDescriptionNote.text?.toString()?.trim() ?: ""
 
             if (title.isBlank() && description.isBlank() &&
-                viewModel.images.value?.isEmpty() == true) {
+                viewModel.noteImages.value?.isEmpty() == true &&
+                viewModel.noteTags.value?.isEmpty() == true) {
                 findNavController().popBackStack()
                 return@setOnClickListener
             }
 
             val image =
-                if (viewModel.imagesData.value.isNullOrEmpty()) null
-                else viewModel.imagesData.value?.get(0)?.imageData
+                if (viewModel.noteImages.value.isNullOrEmpty()) null
+                else viewModel.noteImages.value?.get(0)?.imageData
 
             val updatedNote = NoteEntity(
                 title = title,
@@ -181,7 +191,7 @@ class NoteFragment : Fragment(R.layout.fragment_note) {
         }
     }
 
-    private fun setupListeners() {
+    private fun setupBindings() {
         binding.addPhotoNote.setOnClickListener {
             pickImageLauncher.launch("image/*")
         }
@@ -193,7 +203,7 @@ class NoteFragment : Fragment(R.layout.fragment_note) {
         }
     }
 
-    fun onTagClick(tag: TagEntity) {
+    private fun onTagClick(tag: TagEntity) {
         val selectedTags = viewModel.noteTags.value ?: emptyList()
         val updatedList = if (tag in selectedTags) {
             selectedTags - tag
@@ -201,6 +211,10 @@ class NoteFragment : Fragment(R.layout.fragment_note) {
             selectedTags + tag
         }
         viewModel.updateTags(updatedList)
+    }
+
+    private fun deleteImage(image : ImageEntity){
+        viewModel.deleteImage(image)
     }
 
     override fun onAttach(context: Context) {

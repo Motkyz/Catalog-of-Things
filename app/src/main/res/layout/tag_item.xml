@@ -7,11 +7,14 @@
 
     android:layout_height="wrap_content"
     android:layout_width="wrap_content"
-    android:minHeight="18dp"
-    android:minWidth="48dp"
     style="@style/button"
 
     app:icon="@drawable/ic_circle"
     app:iconSize="24dp"
-    android:text="tag">
+    android:text="Не выбран"
+
+    android:maxLines="3"
+
+    android:paddingEnd="5dp"
+    android:paddingStart="0dp">
 </com.google.android.material.button.MaterialButton>

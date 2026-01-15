@@ -3,9 +3,10 @@ package com.example.catalogofthings.di.viewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.catalogofthings.presenter.MainViewModel
+import com.example.catalogofthings.presenter.viewModels.ChooseFolderBottomSheetViewModel
 import com.example.catalogofthings.presenter.viewModels.ChooseTagsBottomSheetViewModel
 import com.example.catalogofthings.presenter.viewModels.FolderViewModel
-import com.example.catalogofthings.presenter.viewModels.NewTagViewModel
+import com.example.catalogofthings.presenter.viewModels.TagViewModel
 import com.example.catalogofthings.presenter.viewModels.NoteFragmentViewModel
 import dagger.Binds
 import dagger.Module
@@ -42,9 +43,9 @@ interface ViewModelModule {
 
     @Binds
     @IntoMap
-    @ViewModelKey(NewTagViewModel::class)
-    fun bindNewTagViewModel(
-        viewModel: NewTagViewModel
+    @ViewModelKey(TagViewModel::class)
+    fun bindTagViewModel(
+        viewModel: TagViewModel
     ): ViewModel
 
     @Binds
@@ -52,5 +53,12 @@ interface ViewModelModule {
     @ViewModelKey(ChooseTagsBottomSheetViewModel::class)
     fun bindChooseTagsBottomSheetViewModel(
         viewModel: ChooseTagsBottomSheetViewModel
+    ): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(ChooseFolderBottomSheetViewModel::class)
+    fun bindChooseFolderBottomSheetViewModel(
+        viewModel: ChooseFolderBottomSheetViewModel
     ): ViewModel
 }

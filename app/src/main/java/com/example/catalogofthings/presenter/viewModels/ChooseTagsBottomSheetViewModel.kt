@@ -6,12 +6,15 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.catalogofthings.data.model.TagEntity
+import com.example.catalogofthings.domain.tagsUseCases.DeleteTagUseCase
 import com.example.catalogofthings.domain.tagsUseCases.GetTagsUseCase
+import com.example.catalogofthings.domain.tagsUseCases.UpdateTagUseCase
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class ChooseTagsBottomSheetViewModel @Inject constructor(
-    private val getTagsUseCase: GetTagsUseCase
+    private val getTagsUseCase: GetTagsUseCase,
+    private val deleteTagUseCase: DeleteTagUseCase
 ): ViewModel() {
 
     init {
@@ -27,6 +30,12 @@ class ChooseTagsBottomSheetViewModel @Inject constructor(
             getTagsUseCase().collect {
                 _tags.postValue(it)
             }
+        }
+    }
+
+    fun deleteTag(tag : TagEntity) {
+        viewModelScope.launch {
+            deleteTagUseCase(tag)
         }
     }
 }

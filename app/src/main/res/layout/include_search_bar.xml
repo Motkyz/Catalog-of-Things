@@ -2,7 +2,9 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_marginHorizontal="8dp">
 
     <EditText
         android:id="@+id/search_in_folder_fragment"
@@ -13,35 +15,66 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/barrier"
 
         android:layout_marginVertical="10dp"
         style="@style/search">
     </EditText>
 
-    <Button
-        android:id="@+id/button_sort_in_folder"
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/barrier"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/search_in_folder_fragment"
+        android:orientation="horizontal"
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="search_in_folder_fragment">
+    </androidx.constraintlayout.widget.Barrier>
+
+    <ImageView
+        android:id="@+id/sorting_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:src="@drawable/ic_sort_asc"
+        app:tint="@color/backgroundElements"
+        app:layout_constraintTop_toTopOf="@id/button_sort_in_folder"
+        app:layout_constraintBottom_toBottomOf="@id/button_sort_in_folder"
         app:layout_constraintStart_toStartOf="@id/search_in_folder_fragment"
+        app:layout_constraintEnd_toStartOf="@id/button_sort_in_folder" />
 
-        style="@style/button"
-        app:icon = "@drawable/ic_sort"
-        android:text="Сортировка">
+    <Spinner
+        android:id="@+id/button_sort_in_folder"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/barrier"
+        app:layout_constraintStart_toEndOf="@id/sorting_icon"
+        app:layout_constraintEnd_toEndOf="@id/vertical_guideline"
+        style="@style/spinnerWithSmallArrow"
+        android:gravity="center"
+        tools:listitem="@layout/sorting_variant"/>
 
-    </Button>
-
-    <Button
-        android:id="@+id/button_filter_in_folder"
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/vertical_guideline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5">
+    </androidx.constraintlayout.widget.Guideline>
 
-        app:layout_constraintTop_toBottomOf="@id/search_in_folder_fragment"
-        app:layout_constraintEnd_toEndOf="@id/search_in_folder_fragment"
+    <Spinner
+        android:id="@+id/tag_spinner_filter_in_folder"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:dropDownWidth="wrap_content"
+        android:minWidth="150dp"
+        android:gravity="center"
+        tools:listitem="@layout/tag_item"
 
-        style="@style/button"
-        app:icon = "@drawable/ic_filter"
-        android:text="Фильтрация">
-    </Button>
+        app:layout_constraintTop_toTopOf="@id/button_sort_in_folder"
+        app:layout_constraintBottom_toBottomOf="@id/button_sort_in_folder"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/vertical_guideline"
+        style="@style/spinnerWithSmallArrow">
+    </Spinner>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
