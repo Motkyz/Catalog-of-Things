@@ -7,19 +7,44 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.catalogofthings.data.model.NoteEntity
 import com.example.catalogofthings.data.model.NoteWithTags
+import com.example.catalogofthings.data.model.TagEntity
 import com.example.catalogofthings.domain.notesUseCases.CreateNoteUseCase
 import com.example.catalogofthings.domain.notesUseCases.GetNoteUseCase
+import com.example.catalogofthings.domain.notesUseCases.GetNotesByFiltersUseCase
 import com.example.catalogofthings.domain.notesUseCases.GetNotesUseCase
 import com.example.catalogofthings.domain.notesUseCases.UpdateNoteUseCase
+import com.example.catalogofthings.domain.tagsUseCases.GetTagsUseCase
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class FolderViewModel @Inject constructor(
     private val getNoteUseCase: GetNoteUseCase,
     private val getNotesUseCase: GetNotesUseCase,
+    private val getNotesByFiltersUseCase: GetNotesByFiltersUseCase,
     private val createNoteUseCase: CreateNoteUseCase,
-    private val updateNoteUseCase: UpdateNoteUseCase
+    private val updateNoteUseCase: UpdateNoteUseCase,
+    private val getTagsUseCase: GetTagsUseCase
 ): ViewModel() {
+
+    private val _searchFilter = MutableLiveData<String?>()
+    val searchFilter: LiveData<String?>
+        get() = _searchFilter
+
+    fun setSearchFilter(filter: String?) {
+        _searchFilter.postValue(
+            filter
+        )
+    }
+
+    private val _tagFilter = MutableLiveData<Int?>()
+    val tagFilter: LiveData<Int?>
+        get() = _tagFilter
+
+    fun setTagFilter(filter: Int?) {
+        _tagFilter.postValue(
+            filter
+        )
+    }
 
     private val _currentFolder = MutableLiveData<NoteWithTags?>()
     val currentFolder: LiveData<NoteWithTags?>
@@ -42,6 +67,36 @@ class FolderViewModel @Inject constructor(
         viewModelScope.launch {
             getNotesUseCase(id).collect {
                 _notes.postValue(it)
+            }
+        }
+    }
+
+    fun getNotesByFilters() {
+        if (searchFilter.value.isNullOrBlank() && tagFilter.value == null) {
+            getNotes(currentFolder.value?.note?.noteId ?: 0)
+        } else {
+            viewModelScope.launch {
+                getNotesByFiltersUseCase(
+                    searchFilter.value, tagFilter.value
+                ).collect {
+                    _notes.postValue(it)
+                }
+            }
+        }
+    }
+
+    init {
+        getTags()
+    }
+
+    private val _tags = MutableLiveData<List<TagEntity>>()
+    val tags: LiveData<List<TagEntity>>
+        get() = _tags
+
+    fun getTags() {
+        viewModelScope.launch {
+            getTagsUseCase().collect {
+                _tags.postValue(it)
             }
         }
     }

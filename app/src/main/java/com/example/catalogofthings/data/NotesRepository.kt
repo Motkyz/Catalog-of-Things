@@ -9,9 +9,12 @@ import com.example.catalogofthings.data.model.NoteWithTags
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 import com.example.catalogofthings.data.model.NoteTagCrossRef
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 interface NotesRepository {
     fun getNotes(id: Int = 0): Flow<List<NoteWithTags>>
+    fun getNotesByFilters(search: String?, tagId: Int?): Flow<List<NoteWithTags>>
     suspend fun getNote(id: Int): NoteWithTags?
     suspend fun getFullNote(id: Int): NoteFull?
     suspend fun updateNote(oldNote: NoteEntity, newNote: NoteEntity)
@@ -21,13 +24,26 @@ interface NotesRepository {
     suspend fun deleteTag(noteId: Int, tagId: Int)
     suspend fun addImage(noteId: Int, imageId: Int)
     suspend fun updateChildrenCount(parentId: Int)
+    fun getAllFolders(): Flow<List<NoteEntity>>
 }
 
 class NotesRepositoryImpl @Inject constructor(
     private val dao: NotesDAO
 ): NotesRepository {
-    override fun getNotes(id: Int): Flow<List<NoteWithTags>> {
-        return dao.getNotes(id)
+    override fun getNotes(id: Int): Flow<List<NoteWithTags>> =
+        dao.getNotes(id)
+
+    override fun getNotesByFilters(
+        search: String?,
+        tagId: Int?
+    ): Flow<List<NoteWithTags>> {
+        return if (!search.isNullOrBlank() && tagId != null) {
+            dao.getNotesByFilters(search, tagId)
+        } else if (tagId != null) {
+            dao.getNotesByTag(tagId)
+        } else {
+            dao.getNotesBySearch(search ?: "")
+        }
     }
 
     override suspend fun getNote(id: Int): NoteWithTags? =

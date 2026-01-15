@@ -31,6 +31,8 @@ import com.example.catalogofthings.domain.notesUseCases.GetFullNoteUseCase
 import com.example.catalogofthings.domain.notesUseCases.GetFullNoteUseCaseImpl
 import com.example.catalogofthings.domain.notesUseCases.GetNoteUseCase
 import com.example.catalogofthings.domain.notesUseCases.GetNoteUseCaseImpl
+import com.example.catalogofthings.domain.notesUseCases.GetNotesByFiltersUseCase
+import com.example.catalogofthings.domain.notesUseCases.GetNotesByFiltersUseCaseImpl
 import com.example.catalogofthings.domain.notesUseCases.GetNotesUseCase
 import com.example.catalogofthings.domain.notesUseCases.GetNotesUseCaseImpl
 import com.example.catalogofthings.domain.notesUseCases.UpdateNoteUseCase
@@ -66,6 +68,9 @@ interface AppBindsModule {
     @Singleton
     fun bindGetNotesUseCase(impl: GetNotesUseCaseImpl): GetNotesUseCase
 
+    @Binds
+    @Singleton
+    fun bindGetNotesByFiltersUseCase(impl: GetNotesByFiltersUseCaseImpl): GetNotesByFiltersUseCase
     @Binds
     @Singleton
     fun bindGetNoteUseCase(impl: GetNoteUseCaseImpl): GetNoteUseCase
