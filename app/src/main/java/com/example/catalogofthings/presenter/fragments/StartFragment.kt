@@ -48,6 +48,7 @@ class StartFragment: Fragment(R.layout.fragment_start_app) {
 
         initAllObserve()
         initTagSpinner()
+        initVariantSpinner()
 
         adapter = ListNotesAdapter(
             onNoteClick = ::onNoteClick,
@@ -62,7 +63,7 @@ class StartFragment: Fragment(R.layout.fragment_start_app) {
         setBindings()
     }
 
-    private fun initTagSpinner(){
+    private fun initTagSpinner() {
         tagSpinner = binding.searchBarStartFragment.tagSpinnerFilterInFolder
 
         tagAdapter = TagSpinnerAdapter(requireContext(), showEmptyOption = true)
@@ -87,6 +88,7 @@ class StartFragment: Fragment(R.layout.fragment_start_app) {
         }
     }
 
+    private fun initVariantSpinner() {
         variantSpinner = binding.searchBarStartFragment.buttonSortInFolder
 
         variantAdapter = SortingSpinnerAdapter(requireContext())
@@ -108,16 +110,7 @@ class StartFragment: Fragment(R.layout.fragment_start_app) {
 
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
-
-        adapter = ListNotesAdapter(
-            onNoteClick = ::onNoteClick,
-            onNoteLongClick = ::onNoteLongClick
-        )
-
-        with(binding.includedRecyclerNotesStartFragment.recyclerNotes) {
-            layoutManager = LinearLayoutManager(requireContext())
-            adapter = this@StartFragment.adapter
-        }
+    }
 
     private fun setBindings(){
         binding.addNew.setOnClickListener {

@@ -27,8 +27,6 @@ abstract class AppComponent {
     abstract fun inject(fragment: ChooseFolderBottomSheet)
     abstract fun inject(fragment: CreateFolderBottomSheet)
 
-
-
     @Component.Builder
     interface Builder {
         @BindsInstance

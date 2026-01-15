@@ -85,11 +85,16 @@ class FolderFragment : Fragment(R.layout.fragment_open_folder) {
         }
 
         initTagSpinner()
+        initVariantSpinner()
         setBindings()
     }
 
     private fun onTagFilterClick(tag: TagEntity?) {
         viewModel.setTagFilter(tag?.tagId)
+    }
+
+    fun onVariantClick(variant: SortingVariantsEnum?) {
+        viewModel.setSort(variant ?: SortingVariantsEnum.ON_CREATE_DATE)
     }
 
     private fun onNoteClick(note: NoteEntity) {
@@ -181,9 +186,24 @@ class FolderFragment : Fragment(R.layout.fragment_open_folder) {
             viewModel.getNotesByFilters()
             tagSpinner.setSelection(tagAdapter.getPosition(it))
         }
+
+        viewModel.sortingDirection.observe(viewLifecycleOwner) {
+            with(binding.includeSearchBarFolderFragment) {
+                if (it)
+                    sortingIcon.setImageResource(R.drawable.ic_sort_asc)
+                else
+                    sortingIcon.setImageResource(R.drawable.ic_sort_desc)
+            }
+        }
+
+        viewModel.sortingVariant.observe(viewLifecycleOwner) {
+            variantSpinner.setSelection(variantAdapter.getPosition(it))
+            val thisFolder = viewModel.currentFolder.value?.note?.noteId ?: 0
+            viewModel.getNotes(thisFolder)
+        }
     }
 
-    private fun initTagSpinner(){
+    private fun initTagSpinner() {
         tagSpinner = binding.includeSearchBarFolderFragment.tagSpinnerFilterInFolder
 
         tagAdapter = TagSpinnerAdapter(requireContext(), showEmptyOption = true)
@@ -191,7 +211,12 @@ class FolderFragment : Fragment(R.layout.fragment_open_folder) {
         tagSpinner.adapter = tagAdapter
 
         tagSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
                 val selectedTag = tagAdapter.getItem(position)
 
                 if (view is MaterialButton) {
@@ -206,7 +231,9 @@ class FolderFragment : Fragment(R.layout.fragment_open_folder) {
 
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
+    }
 
+    private fun initVariantSpinner() {
         variantSpinner = binding.includeSearchBarFolderFragment.buttonSortInFolder
 
         variantAdapter = SortingSpinnerAdapter(requireContext())
@@ -214,7 +241,12 @@ class FolderFragment : Fragment(R.layout.fragment_open_folder) {
         variantSpinner.adapter = variantAdapter
 
         variantSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
                 val selectedVariant = variantAdapter.getItem(position)
 
                 if (view is MaterialButton) {
@@ -228,10 +260,10 @@ class FolderFragment : Fragment(R.layout.fragment_open_folder) {
 
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
+    }
 
-        
 
-    private fun setBindings(){
+    private fun setBindings() {
         binding.addNewFolder.setOnClickListener {
             val parentId = viewModel.currentFolder.value?.note?.noteId ?: 0
             findNavController().navigate(
@@ -268,8 +300,7 @@ class FolderFragment : Fragment(R.layout.fragment_open_folder) {
             val parent = viewModel.currentFolder.value?.note?.parentId
             if (parent != null && parent != 0) {
                 viewModel.setFolder(parent)
-            }
-            else if (parent == 0) {
+            } else if (parent == 0) {
                 viewModel.setFolder(parent)
             }
             findNavController().popBackStack()
