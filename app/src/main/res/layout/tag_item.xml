@@ -13,6 +13,8 @@
     app:iconSize="24dp"
     android:text="Не выбран"
 
+    android:maxLines="3"
+
     android:paddingEnd="5dp"
     android:paddingStart="0dp">
 </com.google.android.material.button.MaterialButton>

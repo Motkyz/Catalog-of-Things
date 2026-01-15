@@ -87,10 +87,6 @@ class FolderViewModel @Inject constructor(
         }
     }
 
-    init {
-        getTags()
-    }
-
     private val _tags = MutableLiveData<List<TagEntity>>()
     val tags: LiveData<List<TagEntity>>
         get() = _tags

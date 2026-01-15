@@ -75,7 +75,7 @@ class NoteFragment : Fragment(R.layout.fragment_note) {
 
         initAdapters()
         setupUI()
-        setupListeners()
+        setupBindings()
 
         if (isNewNote) {
             binding.dateCreateNote.text = "Только что"
@@ -191,7 +191,7 @@ class NoteFragment : Fragment(R.layout.fragment_note) {
         }
     }
 
-    private fun setupListeners() {
+    private fun setupBindings() {
         binding.addPhotoNote.setOnClickListener {
             pickImageLauncher.launch("image/*")
         }

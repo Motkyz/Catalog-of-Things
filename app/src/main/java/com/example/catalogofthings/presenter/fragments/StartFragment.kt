@@ -45,8 +45,23 @@ class StartFragment: Fragment(R.layout.fragment_start_app) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.getNotes(0)
+        initAllObserve()
+        initTagSpinner()
 
+        adapter = ListNotesAdapter(
+            onNoteClick = ::onNoteClick,
+            onNoteLongClick = ::onNoteLongClick
+        )
+
+        with(binding.includedRecyclerNotesStartFragment.recyclerNotes) {
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = this@StartFragment.adapter
+        }
+
+        setBindings()
+    }
+
+    private fun initTagSpinner(){
         tagSpinner = binding.searchBarStartFragment.tagSpinnerFilterInFolder
 
         tagAdapter = TagSpinnerAdapter(requireContext(), showEmptyOption = true)
@@ -69,17 +84,13 @@ class StartFragment: Fragment(R.layout.fragment_start_app) {
 
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
+    }
 
-        adapter = ListNotesAdapter(
-            onNoteClick = ::onNoteClick,
-            onNoteLongClick = ::onNoteLongClick
-        )
+    private fun onTagFilterClick(tag: TagEntity?) {
+        viewModel.setTagFilter(tag?.tagId)
+    }
 
-        with(binding.includedRecyclerNotesStartFragment.recyclerNotes) {
-            layoutManager = LinearLayoutManager(requireContext())
-            adapter = this@StartFragment.adapter
-        }
-
+    private fun setBindings(){
         binding.addNew.setOnClickListener {
             findNavController().navigate(
                 R.id.action_startFragment_to_noteFragment,
@@ -91,23 +102,37 @@ class StartFragment: Fragment(R.layout.fragment_start_app) {
         }
 
         binding.addNew.setOnLongClickListener {
-            findNavController().navigate(
-                R.id.action_startFragment_to_folderFragment,
-                bundleOf(
-                    "id" to -1,
-                    "parentId" to 0
-                )
-            )
+            val bottomSheet = CreateFolderBottomSheet.newInstance(parentId = 0)
+            bottomSheet.setOnFolderCreatedListener { newFolder ->
+                viewModel.createFolder(newFolder)
+            }
+            bottomSheet.show(childFragmentManager, "create_folder_bottom_modal")
             true
         }
 
         binding.searchBarStartFragment.searchInFolderFragment.doAfterTextChanged {
             viewModel.setSearchFilter(it.toString())
         }
+    }
+
+    private fun initAllObserve(){
+        viewModel.getTags()
+
+        viewModel.getNotes(0)
 
         viewModel.notes.observe(viewLifecycleOwner) { notesWithTags ->
-            val noteEntities = notesWithTags?.map { it.note } ?: emptyList()
-            adapter.submitList(noteEntities)
+            val notes = notesWithTags ?: emptyList()
+            val noteEntities = notes.map { it.note }
+
+            if (notes.isEmpty()) {
+                binding.includedNotesNotFoundStartFragment.root.visibility = View.VISIBLE
+                binding.includedRecyclerNotesStartFragment.recyclerNotes.visibility = View.GONE
+            } else {
+                binding.includedNotesNotFoundStartFragment.root.visibility = View.GONE
+                binding.includedRecyclerNotesStartFragment.recyclerNotes.visibility = View.VISIBLE
+
+                adapter.submitList(noteEntities)
+            }
         }
 
         viewModel.tags.observe(viewLifecycleOwner) { tags ->
@@ -122,6 +147,7 @@ class StartFragment: Fragment(R.layout.fragment_start_app) {
             viewModel.getNotesByFilters()
             tagSpinner.setSelection(tagAdapter.getPosition(it))
         }
+
     }
 
     fun onNoteClick(note: NoteEntity) {
@@ -142,11 +168,7 @@ class StartFragment: Fragment(R.layout.fragment_start_app) {
         }
     }
 
-    fun onTagFilterClick(tag: TagEntity?) {
-        viewModel.setTagFilter(tag?.tagId)
-    }
-
-    fun onNoteLongClick(note: NoteEntity) {
+    private fun onNoteLongClick(note: NoteEntity) {
         NoteActionDialog.show(
             context = requireContext(),
             note = note,

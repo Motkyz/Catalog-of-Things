@@ -14,16 +14,26 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/barrier"
 
         android:layout_marginVertical="10dp"
         style="@style/search">
     </EditText>
 
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/barrier"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="search_in_folder_fragment">
+    </androidx.constraintlayout.widget.Barrier>
+
     <com.google.android.material.button.MaterialButton
         android:id="@+id/button_sort_in_folder"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/search_in_folder_fragment"
+        app:layout_constraintTop_toBottomOf="@id/barrier"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintHorizontal_chainStyle="spread_inside"
 
@@ -35,31 +45,29 @@
         android:text="Сортировка">
     </com.google.android.material.button.MaterialButton>
 
-    <TextView
-        android:id="@+id/tag_filter_text"
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/vertical_guideline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Тег:"
-
-        app:layout_constraintTop_toTopOf="@id/button_sort_in_folder"
-        app:layout_constraintBottom_toBottomOf="@id/button_sort_in_folder"
-
-        app:layout_constraintEnd_toStartOf="@id/tag_spinner_filter_in_folder"
-
-        android:layout_marginEnd="5dp"
-        style="@style/text"/>
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5">
+    </androidx.constraintlayout.widget.Guideline>
 
     <Spinner
         android:id="@+id/tag_spinner_filter_in_folder"
-        android:layout_width="140dp"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:dropDownWidth="120dp"
+        android:dropDownWidth="wrap_content"
         android:minWidth="150dp"
         android:maxWidth="170dp"
+
         tools:listitem="@layout/tag_item"
+
         app:layout_constraintTop_toTopOf="@id/button_sort_in_folder"
         app:layout_constraintBottom_toBottomOf="@id/button_sort_in_folder"
         app:layout_constraintEnd_toEndOf="parent"
-        style="@style/spinnerWithSmallArrow" />
+        app:layout_constraintStart_toStartOf="@id/vertical_guideline"
+        style="@style/spinnerWithSmallArrow">
+    </Spinner>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

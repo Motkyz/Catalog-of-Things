@@ -16,8 +16,8 @@ object TagActionsDialog {
         val items = arrayOf("Редактировать", "Удалить")
 
 
-        AlertDialog.Builder(context)
-            .setTitle("Выберите действие с " + tag.title)
+        AlertDialog.Builder(context, com.google.android.material.R.style.ThemeOverlay_Material3_Dialog)
+            .setTitle("Выберите действие с тегом \"${tag.title}\"")
             .setItems(items) { _, which ->
                 when (which) {
                     0 -> onDelete()

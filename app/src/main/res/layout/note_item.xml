@@ -44,19 +44,6 @@
             style="@style/text">
         </TextView>
 
-        <TextView
-            android:id="@+id/text_for_count_note"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.1"
-            android:layout_marginHorizontal="3dp"
-
-            android:text="7"
-            android:textAlignment="center"
-            android:layout_gravity="center"
-            style="@style/text">
-        </TextView>
-
     </LinearLayout>
 
 </com.google.android.material.card.MaterialCardView >

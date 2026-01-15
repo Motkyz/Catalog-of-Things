@@ -44,6 +44,8 @@ class FolderFragment : Fragment(R.layout.fragment_open_folder) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        setAllObserve()
+
         val folderId = arguments?.getInt("id") ?: 0
 
         if (folderId > 0 && viewModel.currentFolder.value == null) {
@@ -67,6 +69,116 @@ class FolderFragment : Fragment(R.layout.fragment_open_folder) {
             if (folderId > 0) viewModel.setFolder(folderId)
         }
 
+        adapter = ListNotesAdapter(
+                onNoteClick = ::onNoteClick,
+                onNoteLongClick = ::onNoteLongClick,
+        )
+
+        with(binding.includedRecyclerNotesFolderFragment.recyclerNotes) {
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = this@FolderFragment.adapter
+        }
+
+        initTagSpinner()
+        setBindings()
+    }
+
+    private fun onTagFilterClick(tag: TagEntity?) {
+        viewModel.setTagFilter(tag?.tagId)
+    }
+
+    private fun onNoteClick(note: NoteEntity) {
+        val parent = viewModel.currentFolder.value?.note?.noteId
+        val bundle = bundleOf(
+            "id" to note.noteId,
+            "parentId" to parent
+        )
+        if (note.isFolder) {
+            findNavController().navigate(
+                R.id.action_folderFragment_self,
+                bundle
+            )
+        } else {
+            findNavController().navigate(
+                R.id.action_folderFragment_to_noteFragment,
+                bundle
+            )
+        }
+    }
+
+    private fun onNoteLongClick(note: NoteEntity) {
+        NoteActionDialog.show(
+            context = requireContext(),
+            note = note,
+            onDelete = {
+                viewModel.deleteNote(note)
+            },
+            replaceInFolder = {
+                val bottomSheet = ChooseFolderBottomSheet()
+                bottomSheet.setNote(note)
+                bottomSheet.setOnFolderClick{
+                    val newParent = it.noteId
+                    viewModel.updateFolder(note, note.copy(parentId = newParent))
+                }
+                bottomSheet.show(childFragmentManager, null)
+            }
+        )
+    }
+
+    private fun updateFolder(title: String) {
+        val thisFolder = viewModel.currentFolder.value?.note
+        val newFolder = NoteEntity(
+            title = title,
+            description = "",
+            parentId = thisFolder?.parentId ?: 0
+        )
+
+        viewModel.updateFolder(
+            thisFolder ?: newFolder,
+            newFolder
+        )
+    }
+
+    private fun setAllObserve(){
+        viewModel.getTags()
+
+        viewModel.getNotes(0)
+        viewModel.notes.observe(viewLifecycleOwner) { notesWithTags ->
+            val notes = notesWithTags ?: emptyList()
+            val noteEntities = notes.map { it.note }
+
+            if (notes.isEmpty()) {
+                binding.includedNotesNotFoundFolderFragment.root.visibility = View.VISIBLE
+                binding.includedRecyclerNotesFolderFragment.recyclerNotes.visibility = View.GONE
+            } else {
+                binding.includedNotesNotFoundFolderFragment.root.visibility = View.GONE
+                binding.includedRecyclerNotesFolderFragment.recyclerNotes.visibility = View.VISIBLE
+                adapter.submitList(noteEntities)
+            }
+        }
+
+        viewModel.currentFolder.observe(viewLifecycleOwner) {
+            if (it != null) {
+                viewModel.getNotes(it.note.noteId)
+                binding.includeHeaderFolder.titleFolder.setText(it.note.title)
+            }
+        }
+
+        viewModel.tags.observe(viewLifecycleOwner) { tags ->
+            tagAdapter.setData(tags ?: emptyList())
+        }
+
+        viewModel.searchFilter.observe(viewLifecycleOwner) {
+            viewModel.getNotesByFilters()
+        }
+
+        viewModel.tagFilter.observe(viewLifecycleOwner) {
+            viewModel.getNotesByFilters()
+            tagSpinner.setSelection(tagAdapter.getPosition(it))
+        }
+    }
+
+    private fun initTagSpinner(){
         tagSpinner = binding.includeSearchBarFolderFragment.tagSpinnerFilterInFolder
 
         tagAdapter = TagSpinnerAdapter(requireContext(), showEmptyOption = true)
@@ -89,17 +201,9 @@ class FolderFragment : Fragment(R.layout.fragment_open_folder) {
 
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
+    }
 
-        adapter = ListNotesAdapter(
-                onNoteClick = ::onNoteClick,
-                onNoteLongClick = ::onNoteLongClick,
-        )
-
-        with(binding.includedRecyclerNotesFolderFragment.recyclerNotes) {
-            layoutManager = LinearLayoutManager(requireContext())
-            adapter = this@FolderFragment.adapter
-        }
-
+    private fun setBindings(){
         binding.addNewFolder.setOnClickListener {
             val parentId = viewModel.currentFolder.value?.note?.noteId ?: 0
             findNavController().navigate(
@@ -112,14 +216,13 @@ class FolderFragment : Fragment(R.layout.fragment_open_folder) {
         }
 
         binding.addNewFolder.setOnLongClickListener {
-            val parentId = viewModel.currentFolder.value?.note?.noteId ?: 0
-            findNavController().navigate(
-                R.id.action_folderFragment_self,
-                bundleOf(
-                    "id" to -1,
-                    "parentId" to parentId
-                )
-            )
+            val currentParentId = viewModel.currentFolder.value?.note?.noteId ?: 0
+
+            val bottomSheet = CreateFolderBottomSheet.newInstance(parentId = currentParentId)
+            bottomSheet.setOnFolderCreatedListener { newFolder ->
+                viewModel.createFolder(newFolder)
+            }
+            bottomSheet.show(childFragmentManager, "create_folder_bottom_modal")
             true
         }
 
@@ -146,87 +249,6 @@ class FolderFragment : Fragment(R.layout.fragment_open_folder) {
         binding.includeSearchBarFolderFragment.searchInFolderFragment.doAfterTextChanged {
             viewModel.setSearchFilter(it.toString())
         }
-
-        viewModel.notes.observe(viewLifecycleOwner) { notes ->
-            val noteEntities = notes?.map { it.note } ?: emptyList()
-            adapter.submitList(noteEntities)
-        }
-
-        viewModel.currentFolder.observe(viewLifecycleOwner) {
-            if (it != null) {
-                viewModel.getNotes(it.note.noteId)
-                binding.includeHeaderFolder.titleFolder.setText(it.note.title)
-            }
-        }
-
-        viewModel.tags.observe(viewLifecycleOwner) { tags ->
-            tagAdapter.setData(tags ?: emptyList())
-        }
-
-        viewModel.searchFilter.observe(viewLifecycleOwner) {
-            viewModel.getNotesByFilters()
-        }
-
-        viewModel.tagFilter.observe(viewLifecycleOwner) {
-            viewModel.getNotesByFilters()
-            tagSpinner.setSelection(tagAdapter.getPosition(it))
-        }
-    }
-
-    fun onTagFilterClick(tag: TagEntity?) {
-        viewModel.setTagFilter(tag?.tagId)
-    }
-
-    fun onNoteClick(note: NoteEntity) {
-        val parent = viewModel.currentFolder.value?.note?.noteId
-        val bundle = bundleOf(
-            "id" to note.noteId,
-            "parentId" to parent
-        )
-        if (note.isFolder) {
-            findNavController().navigate(
-                R.id.action_folderFragment_self,
-                bundle
-            )
-        } else {
-            findNavController().navigate(
-                R.id.action_folderFragment_to_noteFragment,
-                bundle
-            )
-        }
-    }
-
-    fun onNoteLongClick(note: NoteEntity) {
-        NoteActionDialog.show(
-            context = requireContext(),
-            note = note,
-            onDelete = {
-                viewModel.deleteNote(note)
-            },
-            replaceInFolder = {
-                val bottomSheet = ChooseFolderBottomSheet()
-                bottomSheet.setNote(note)
-                bottomSheet.setOnFolderClick{
-                    val newParent = it.noteId
-                    viewModel.updateFolder(note, note.copy(parentId = newParent))
-                }
-                bottomSheet.show(childFragmentManager, null)
-            }
-        )
-    }
-
-    fun updateFolder(title: String) {
-        val thisFolder = viewModel.currentFolder.value?.note
-        val newFolder = NoteEntity(
-            title = title,
-            description = "",
-            parentId = thisFolder?.parentId ?: 0
-        )
-
-        viewModel.updateFolder(
-            thisFolder ?: newFolder,
-            newFolder
-        )
     }
 
     override fun onAttach(context: Context) {
