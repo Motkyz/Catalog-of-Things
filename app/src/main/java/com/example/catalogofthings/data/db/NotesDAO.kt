@@ -65,8 +65,8 @@ interface NotesDAO {
     @Query("SELECT COUNT() FROM ${NoteEntity.TABLE} WHERE parentId = :parentId")
     suspend fun getChildrenCount(parentId: Int): Int
 
-    @Query("SELECT * FROM ${NoteEntity.TABLE} WHERE isFolder = 1 AND noteId < :id")
-    fun getAllFolders(id : Int): Flow<List<NoteEntity>>
+    @Query("SELECT * FROM ${NoteEntity.TABLE} WHERE isFolder = 1")
+    fun getAllFolders(): Flow<List<NoteEntity>>
 
     //Tags
     @Upsert

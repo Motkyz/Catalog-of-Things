@@ -57,18 +57,6 @@ class FolderFragment : Fragment(R.layout.fragment_open_folder) {
             viewModel.setFolder(folderId)
         }
 
-        if (folderId == -1) {
-            val parentId = arguments?.getInt("parentId") ?: 0
-            viewModel.createFolder(
-                NoteEntity(
-                    title = "",
-                    description = "",
-                    isFolder = true,
-                    parentId = parentId
-                )
-            )
-        }
-
         setFragmentResultListener("requestKey") {requestKey, bundle ->
             val folderId = bundle.getInt("folderId")
             if (folderId > 0) viewModel.setFolder(folderId)
@@ -288,7 +276,8 @@ class FolderFragment : Fragment(R.layout.fragment_open_folder) {
         }
 
         binding.includeHeaderFolder.titleFolder.doAfterTextChanged {
-            updateFolder(it.toString())
+            if (viewModel.currentFolder.value?.note?.title != it.toString())
+                updateFolder(it.toString())
         }
 
         binding.includeSearchBarFolderFragment.searchInFolderFragment.doAfterTextChanged {

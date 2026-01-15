@@ -14,10 +14,11 @@ data class NoteEntity (
     val noteId: Int = 0,
     val title: String,
     val isFolder: Boolean = false,
-    val description: String,
+    val description: String = "",
     val date: Long = System.currentTimeMillis(),
 
-    val parentId: Int = 0,
+    var location: String = "",
+    val parentId: Int,
     val childrenCount: Int = 0,
 
     @ColumnInfo(typeAffinity = BLOB)
