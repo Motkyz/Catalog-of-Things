@@ -38,8 +38,10 @@ data class NoteEntity (
         if (isFolder != other.isFolder) return false
         if (date != other.date) return false
         if (parentId != other.parentId) return false
+        if (childrenCount != other.childrenCount) return false
         if (title != other.title) return false
         if (description != other.description) return false
+        if (location != other.location) return false
         if (!icon.contentEquals(other.icon)) return false
 
         return true
@@ -50,9 +52,11 @@ data class NoteEntity (
         result = 31 * result + isFolder.hashCode()
         result = 31 * result + date.hashCode()
         result = 31 * result + parentId
+        result = 31 * result + childrenCount
         result = 31 * result + title.hashCode()
         result = 31 * result + description.hashCode()
-        result = 31 * result + icon.contentHashCode()
+        result = 31 * result + location.hashCode()
+        result = 31 * result + (icon?.contentHashCode() ?: 0)
         return result
     }
 }
