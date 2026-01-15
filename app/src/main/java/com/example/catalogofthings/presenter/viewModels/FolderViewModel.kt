@@ -1,6 +1,6 @@
 package com.example.catalogofthings.presenter.viewModels
 
-import android.util.Log
+import androidx.collection.intSetOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -15,6 +15,8 @@ import com.example.catalogofthings.domain.notesUseCases.GetNotesByFiltersUseCase
 import com.example.catalogofthings.domain.notesUseCases.GetNotesUseCase
 import com.example.catalogofthings.domain.notesUseCases.UpdateNoteUseCase
 import com.example.catalogofthings.domain.tagsUseCases.GetTagsUseCase
+import com.example.catalogofthings.enums.SortingDirectionsEnum
+import com.example.catalogofthings.enums.SortingVariantsEnum
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -48,6 +50,36 @@ class FolderViewModel @Inject constructor(
         )
     }
 
+    private val _sortingVariant = MutableLiveData<SortingVariantsEnum>()
+    val sortingVariant: LiveData<SortingVariantsEnum>
+        get() = _sortingVariant
+
+    private val _sortingDirection = MutableLiveData<Boolean>()
+    val sortingDirection: LiveData<Boolean>
+        get() = _sortingDirection
+
+    fun setSort(variant: SortingVariantsEnum) {
+        if (_sortingVariant.value == variant) {
+            viewModelScope.launch {
+                _sortingDirection.postValue(
+                    _sortingDirection.value != true
+                )
+            }
+        }
+        else
+            viewModelScope.launch {
+                _sortingDirection.postValue(
+                    true
+                )
+            }
+
+        viewModelScope.launch {
+            _sortingVariant.postValue(
+                variant
+            )
+        }
+    }
+
     private val _currentFolder = MutableLiveData<NoteWithTags?>()
     val currentFolder: LiveData<NoteWithTags?>
         get() = _currentFolder
@@ -68,8 +100,32 @@ class FolderViewModel @Inject constructor(
     fun getNotes(id: Int) {
         viewModelScope.launch {
             getNotesUseCase(id).collect {
-                _notes.postValue(it)
+                _notes.postValue(
+                    sortNotes(it)
+                )
             }
+        }
+    }
+
+    private fun sortNotes(notes: List<NoteWithTags>): List<NoteWithTags> {
+        val variant = sortingVariant.value
+        val isAscending = sortingDirection.value ?: true
+
+        return when {
+            variant == SortingVariantsEnum.ON_UPDATE_DATE && isAscending ->
+                notes.sortedBy { it.note.date }
+            variant == SortingVariantsEnum.ON_UPDATE_DATE && !isAscending ->
+                notes.sortedByDescending { it.note.date }
+            variant == SortingVariantsEnum.ON_TITLE && isAscending ->
+                notes.sortedBy { it.note.title }
+            variant == SortingVariantsEnum.ON_TITLE && !isAscending ->
+                notes.sortedByDescending { it.note.title }
+            variant == SortingVariantsEnum.ON_TYPE && isAscending ->
+                notes.sortedBy { it.note.isFolder }
+            variant == SortingVariantsEnum.ON_TYPE && !isAscending ->
+                notes.sortedByDescending { it.note.isFolder }
+            isAscending -> notes
+            else -> notes.reversed()
         }
     }
 

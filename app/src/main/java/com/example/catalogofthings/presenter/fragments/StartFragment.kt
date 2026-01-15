@@ -3,14 +3,9 @@ package com.example.catalogofthings.presenter.fragments
 import android.content.Context
 import android.content.res.ColorStateList
 import android.os.Bundle
-import android.util.Log
-import android.view.MotionEvent
 import android.view.View
-import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.Spinner
-import android.widget.Toast
-import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
@@ -23,8 +18,10 @@ import com.example.catalogofthings.data.model.NoteEntity
 import com.example.catalogofthings.data.model.TagEntity
 import com.example.catalogofthings.databinding.FragmentStartAppBinding
 import com.example.catalogofthings.di.viewModel.ViewModelFactory
+import com.example.catalogofthings.enums.SortingVariantsEnum
 import com.example.catalogofthings.presenter.actionDialog.NoteActionDialog
 import com.example.catalogofthings.presenter.adapters.ListNotesAdapter
+import com.example.catalogofthings.presenter.adapters.SortingSpinnerAdapter
 import com.example.catalogofthings.presenter.adapters.TagSpinnerAdapter
 import com.example.catalogofthings.presenter.viewModels.FolderViewModel
 import com.google.android.material.button.MaterialButton
@@ -34,6 +31,10 @@ import javax.inject.Inject
 class StartFragment: Fragment(R.layout.fragment_start_app) {
     private lateinit var tagSpinner: Spinner
     private lateinit var tagAdapter: TagSpinnerAdapter
+
+    private lateinit var variantSpinner: Spinner
+    private lateinit var variantAdapter: SortingSpinnerAdapter
+
     private val binding: FragmentStartAppBinding by viewBinding(FragmentStartAppBinding::bind)
 
     @Inject
@@ -63,6 +64,28 @@ class StartFragment: Fragment(R.layout.fragment_start_app) {
                     } else {
                         view.text = selectedTag.title
                         view.iconTint = ColorStateList.valueOf(selectedTag.color)
+                    }
+                }
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
+        }
+
+        variantSpinner = binding.searchBarStartFragment.buttonSortInFolder
+
+        variantAdapter = SortingSpinnerAdapter(requireContext())
+        variantAdapter.setOnVariantClick(::onVariantClick)
+        variantSpinner.adapter = variantAdapter
+
+        variantSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                val selectedVariant = variantAdapter.getItem(position)
+
+                if (view is MaterialButton) {
+                    if (selectedVariant == null) {
+                        view.text = SortingVariantsEnum.ON_CREATE_DATE.variant
+                    } else {
+                        view.text = selectedVariant.variant
                     }
                 }
             }
@@ -122,6 +145,21 @@ class StartFragment: Fragment(R.layout.fragment_start_app) {
             viewModel.getNotesByFilters()
             tagSpinner.setSelection(tagAdapter.getPosition(it))
         }
+
+        viewModel.sortingDirection.observe(viewLifecycleOwner) {
+            with(binding.searchBarStartFragment) {
+                if (it)
+                    sortingIcon.setImageResource(R.drawable.ic_sort_asc)
+                else
+                    sortingIcon.setImageResource(R.drawable.ic_sort_desc)
+            }
+        }
+
+        viewModel.sortingVariant.observe(viewLifecycleOwner) {
+            variantSpinner.setSelection(variantAdapter.getPosition(it))
+            val thisFolder = viewModel.currentFolder.value?.note?.noteId ?: 0
+            viewModel.getNotes(thisFolder)
+        }
     }
 
     fun onNoteClick(note: NoteEntity) {
@@ -144,6 +182,10 @@ class StartFragment: Fragment(R.layout.fragment_start_app) {
 
     fun onTagFilterClick(tag: TagEntity?) {
         viewModel.setTagFilter(tag?.tagId)
+    }
+
+    fun onVariantClick(variant: SortingVariantsEnum?) {
+        viewModel.setSort(variant ?: SortingVariantsEnum.ON_CREATE_DATE)
     }
 
     fun onNoteLongClick(note: NoteEntity) {

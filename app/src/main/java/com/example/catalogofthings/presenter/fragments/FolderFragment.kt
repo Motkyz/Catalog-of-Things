@@ -19,8 +19,10 @@ import com.example.catalogofthings.data.model.NoteEntity
 import com.example.catalogofthings.data.model.TagEntity
 import com.example.catalogofthings.databinding.FragmentOpenFolderBinding
 import com.example.catalogofthings.di.viewModel.ViewModelFactory
+import com.example.catalogofthings.enums.SortingVariantsEnum
 import com.example.catalogofthings.presenter.actionDialog.NoteActionDialog
 import com.example.catalogofthings.presenter.adapters.ListNotesAdapter
+import com.example.catalogofthings.presenter.adapters.SortingSpinnerAdapter
 import com.example.catalogofthings.presenter.adapters.TagSpinnerAdapter
 import com.example.catalogofthings.presenter.viewModels.FolderViewModel
 import com.google.android.material.button.MaterialButton
@@ -31,6 +33,9 @@ class FolderFragment : Fragment(R.layout.fragment_open_folder) {
 
     private lateinit var tagSpinner: Spinner
     private lateinit var tagAdapter: TagSpinnerAdapter
+
+    private lateinit var variantSpinner: Spinner
+    private lateinit var variantAdapter: SortingSpinnerAdapter
 
     private val binding: FragmentOpenFolderBinding by viewBinding(FragmentOpenFolderBinding::bind)
 
@@ -83,6 +88,28 @@ class FolderFragment : Fragment(R.layout.fragment_open_folder) {
                     } else {
                         view.text = selectedTag.title
                         view.iconTint = ColorStateList.valueOf(selectedTag.color)
+                    }
+                }
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
+        }
+
+        variantSpinner = binding.includeSearchBarFolderFragment.buttonSortInFolder
+
+        variantAdapter = SortingSpinnerAdapter(requireContext())
+        variantAdapter.setOnVariantClick(::onVariantClick)
+        variantSpinner.adapter = variantAdapter
+
+        variantSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                val selectedVariant = variantAdapter.getItem(position)
+
+                if (view is MaterialButton) {
+                    if (selectedVariant == null) {
+                        view.text = SortingVariantsEnum.ON_CREATE_DATE.variant
+                    } else {
+                        view.text = selectedVariant.variant
                     }
                 }
             }
@@ -171,10 +198,29 @@ class FolderFragment : Fragment(R.layout.fragment_open_folder) {
             viewModel.getNotesByFilters()
             tagSpinner.setSelection(tagAdapter.getPosition(it))
         }
+
+        viewModel.sortingDirection.observe(viewLifecycleOwner) {
+            with(binding.includeSearchBarFolderFragment) {
+                if (it)
+                    sortingIcon.setImageResource(R.drawable.ic_sort_asc)
+                else
+                    sortingIcon.setImageResource(R.drawable.ic_sort_desc)
+            }
+        }
+
+        viewModel.sortingVariant.observe(viewLifecycleOwner) {
+            variantSpinner.setSelection(variantAdapter.getPosition(it))
+            val thisFolder = viewModel.currentFolder.value?.note?.noteId ?: 0
+            viewModel.getNotes(thisFolder)
+        }
     }
 
     fun onTagFilterClick(tag: TagEntity?) {
         viewModel.setTagFilter(tag?.tagId)
+    }
+
+    fun onVariantClick(variant: SortingVariantsEnum?) {
+        viewModel.setSort(variant ?: SortingVariantsEnum.ON_CREATE_DATE)
     }
 
     fun onNoteClick(note: NoteEntity) {

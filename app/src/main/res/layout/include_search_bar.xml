@@ -19,21 +19,34 @@
         style="@style/search">
     </EditText>
 
-    <com.google.android.material.button.MaterialButton
+    <ImageView
+        android:id="@+id/sorting_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:src="@drawable/ic_sort_asc"
+        android:tint="@color/backgroundElements"
+        app:layout_constraintTop_toTopOf="@id/button_sort_in_folder"
+        app:layout_constraintBottom_toBottomOf="@id/button_sort_in_folder"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/button_sort_in_folder"
+        android:paddingEnd="0dp"
+        />
+
+    <Spinner
         android:id="@+id/button_sort_in_folder"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@id/search_in_folder_fragment"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@id/sorting_icon"
         app:layout_constraintHorizontal_chainStyle="spread_inside"
 
-        style="@style/button"
-        app:iconSize="30dp"
-        android:paddingStart="20dp"
-        android:paddingEnd="20dp"
-        app:icon="@drawable/ic_sort"
-        android:text="Сортировка">
-    </com.google.android.material.button.MaterialButton>
+        style="@style/spinnerWithSmallArrow"
+        android:layout_marginEnd="20dp"
+        android:gravity="left"
+        android:layout_marginStart="5dp"
+        tools:listitem="@layout/sorting_variant"
+        />
 
     <TextView
         android:id="@+id/tag_filter_text"
