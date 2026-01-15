@@ -59,6 +59,7 @@ class ChooseFolderBottomSheet : BottomSheetDialogFragment(R.layout.choose_folder
 
         binding.replaceInStart.setOnClickListener {
             viewModel.updateFolder(_note!!, _note!!.copy(parentId = 0))
+            dismiss()
         }
 
         return binding.root

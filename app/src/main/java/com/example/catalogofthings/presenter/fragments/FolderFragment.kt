@@ -221,6 +221,7 @@ class FolderFragment : Fragment(R.layout.fragment_open_folder) {
             val bottomSheet = CreateFolderBottomSheet.newInstance(parentId = currentParentId)
             bottomSheet.setOnFolderCreatedListener { newFolder ->
                 viewModel.createFolder(newFolder)
+                bottomSheet.dismiss()
             }
             bottomSheet.show(childFragmentManager, "create_folder_bottom_modal")
             true

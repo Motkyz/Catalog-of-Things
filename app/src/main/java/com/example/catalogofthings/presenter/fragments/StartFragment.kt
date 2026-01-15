@@ -181,6 +181,7 @@ class StartFragment: Fragment(R.layout.fragment_start_app) {
                 bottomSheet.setOnFolderClick{
                     val newParent = it.noteId
                     viewModel.updateFolder(note, note.copy(parentId = newParent))
+                    bottomSheet.dismiss()
                 }
                 bottomSheet.show(childFragmentManager, null)
             }
