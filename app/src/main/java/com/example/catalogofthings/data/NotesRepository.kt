@@ -15,6 +15,7 @@ import kotlinx.coroutines.withContext
 
 interface NotesRepository {
     fun getNotes(id: Int = 0): Flow<List<NoteWithTags>>
+    fun getNotesByFilters(search: String?, tagId: Int?): Flow<List<NoteWithTags>>
     suspend fun getNote(id: Int): NoteWithTags?
     fun getAllFolders(id : Int): Flow<List<NoteEntity>>
     suspend fun getFullNote(id: Int): NoteFull?
@@ -30,8 +31,20 @@ interface NotesRepository {
 class NotesRepositoryImpl @Inject constructor(
     private val dao: NotesDAO
 ): NotesRepository {
-    override fun getNotes(id: Int): Flow<List<NoteWithTags>> {
-        return dao.getNotes(id)
+    override fun getNotes(id: Int): Flow<List<NoteWithTags>> =
+        dao.getNotes(id)
+
+    override fun getNotesByFilters(
+        search: String?,
+        tagId: Int?
+    ): Flow<List<NoteWithTags>> {
+        return if (!search.isNullOrBlank() && tagId != null) {
+            dao.getNotesByFilters(search, tagId)
+        } else if (tagId != null) {
+            dao.getNotesByTag(tagId)
+        } else {
+            dao.getNotesBySearch(search ?: "")
+        }
     }
 
     override suspend fun getNote(id: Int): NoteWithTags? =

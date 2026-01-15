@@ -22,8 +22,31 @@ interface NotesDAO {
     suspend fun upsertNote(noteEntity: NoteEntity): Long
 
     @Transaction
-    @Query("SELECT * FROM ${NoteEntity.TABLE} WHERE parentId = :parentId ORDER BY noteId")
+    @Query("SELECT * FROM ${NoteEntity.TABLE} " +
+            "WHERE parentId = :parentId ORDER BY noteId")
     fun getNotes(parentId: Int = 0): Flow<List<NoteWithTags>>
+
+
+    @Transaction
+    @Query("SELECT * FROM ${NoteEntity.TABLE} " +
+            "WHERE title LIKE '%' || :search || '%' " +
+            "ORDER BY noteId")
+    fun getNotesBySearch(search: String): Flow<List<NoteWithTags>>
+
+    @Transaction
+    @Query("SELECT * FROM ${NoteEntity.TABLE} ne " +
+            "JOIN ${NoteTagCrossRef.TABLE} nt ON ne.noteId = nt.noteId " +
+            "AND nt.tagId = :tagId " +
+            "ORDER BY noteId")
+    fun getNotesByTag(tagId: Int): Flow<List<NoteWithTags>>
+
+    @Transaction
+    @Query("SELECT * FROM ${NoteEntity.TABLE} ne " +
+            "JOIN ${NoteTagCrossRef.TABLE} nt ON ne.noteId = nt.noteId " +
+            "WHERE title LIKE '%' || :search || '%' " +
+            "AND nt.tagId = :tagId " +
+            "ORDER BY noteId")
+    fun getNotesByFilters(search: String, tagId: Int): Flow<List<NoteWithTags>>
 
     @Query("SELECT * FROM ${NoteEntity.TABLE} WHERE noteId = :id")
     suspend fun getNoteWithOutTags(id: Int): NoteEntity?

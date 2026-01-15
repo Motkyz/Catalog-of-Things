@@ -11,5 +11,8 @@
 
     app:icon="@drawable/ic_circle"
     app:iconSize="24dp"
-    android:text="tag">
+    android:text="Не выбран"
+
+    android:paddingEnd="5dp"
+    android:paddingStart="0dp">
 </com.google.android.material.button.MaterialButton>
