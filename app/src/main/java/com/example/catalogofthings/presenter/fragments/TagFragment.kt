@@ -13,8 +13,9 @@ import com.example.catalogofthings.data.model.TagEntity
 import com.example.catalogofthings.databinding.FragmentTagBinding
 import com.example.catalogofthings.di.viewModel.ViewModelFactory
 import com.example.catalogofthings.presenter.viewModels.TagViewModel
-import com.github.dhaval2404.colorpicker.ColorPickerDialog
-import com.github.dhaval2404.colorpicker.model.ColorShape
+import com.skydoves.colorpickerview.ColorEnvelope
+import com.skydoves.colorpickerview.ColorPickerDialog
+import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener
 import dev.androidbroadcast.vbpd.viewBinding
 import javax.inject.Inject
 
@@ -49,14 +50,20 @@ class TagFragment : Fragment(R.layout.fragment_tag) {
         }
 
         binding.chooseColorForCreateNewTag.setOnClickListener {
-            ColorPickerDialog
-                .Builder(requireContext())        				// Pass Activity Instance
-                .setTitle("Выбор цвета")           	// Default "Choose Color"
-                .setColorShape(ColorShape.SQAURE)   // Default ColorShape.CIRCLE
-                .setDefaultColor(viewModel.tag.value?.color ?: -1)     // Pass Default Color
-                .setColorListener { color, colorHex ->
-                    viewModel.saveColor(color)
+            ColorPickerDialog.Builder(requireContext())
+                .setTitle("Выбор цвета")
+                .setPreferenceName("MyColorPickerDialog")
+                .setPositiveButton("ОК",
+                    ColorEnvelopeListener { envelope: ColorEnvelope, fromUser: Boolean ->
+                        val selectedColor = envelope.color
+                        viewModel.saveColor(selectedColor)
+                    })
+                .setNegativeButton("Отмена") { dialogInterface, _ ->
+                    dialogInterface.dismiss()
                 }
+                .attachAlphaSlideBar(false)
+                .attachBrightnessSlideBar(true)
+                .setBottomSpace(12)
                 .show()
         }
 

@@ -20,8 +20,8 @@ object TagActionsDialog {
             .setTitle("Выберите действие с тегом \"${tag.title}\"")
             .setItems(items) { _, which ->
                 when (which) {
-                    0 -> onDelete()
-                    1 -> onEdit.invoke()
+                    0 -> onEdit.invoke()
+                    1 -> onDelete()
                 }
             }
             .setNegativeButton("Отмена", null)
