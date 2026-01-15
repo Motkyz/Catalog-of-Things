@@ -158,7 +158,7 @@ class FolderViewModel @Inject constructor(
     fun createFolder(folder: NoteEntity) {
         viewModelScope.launch {
             val newFolder = createNoteUseCase(folder)
-            setFolder(newFolder)
+//            setFolder(newFolder)
         }
     }
 
