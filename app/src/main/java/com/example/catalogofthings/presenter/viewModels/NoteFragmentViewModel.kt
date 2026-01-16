@@ -55,6 +55,7 @@ class NoteFragmentViewModel @Inject constructor(
 
     private val _success = MutableLiveData<Boolean>()
     val success: LiveData<Boolean> get() = _success
+
     fun createNote(
         noteEntity: NoteEntity) {
         try{

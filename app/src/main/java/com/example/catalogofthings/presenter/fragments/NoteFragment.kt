@@ -176,9 +176,9 @@ class NoteFragment : Fragment(R.layout.fragment_note) {
                 viewModel.createNote(
                     noteEntity = updatedNote,
                 )
-            } else {
+            } else oldNote?.let {
                 viewModel.updateNote(
-                    oldNote = oldNote ?: updatedNote,
+                    oldNote = it,
                     newNote = updatedNote,
                 )
             }

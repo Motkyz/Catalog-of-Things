@@ -99,16 +99,19 @@ class FolderFragment : BaseFolderFragment(R.layout.fragment_open_folder) {
 
     private fun updateFolder(title: String) {
         val thisFolder = viewModel.currentFolder.value?.note
-        val newFolder = NoteEntity(
-            title = title,
-            description = "",
-            parentId = thisFolder?.parentId ?: 0
-        )
 
-        viewModel.updateFolder(
-            thisFolder ?: newFolder,
-            newFolder
-        )
+        if (thisFolder != null) {
+            val newFolder = NoteEntity(
+                title = title,
+                description = "",
+                parentId = thisFolder.parentId
+            )
+
+            viewModel.updateFolder(
+                thisFolder,
+                newFolder
+            )
+        }
     }
 
     override fun setObserves() {
