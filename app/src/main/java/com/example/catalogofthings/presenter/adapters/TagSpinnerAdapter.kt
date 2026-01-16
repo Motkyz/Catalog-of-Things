@@ -71,7 +71,6 @@ class TagSpinnerAdapter(
                 button.iconTint = ColorStateList.valueOf(it.color)
                 button.setOnClickListener {
                     onTagFilterClick(tag)
-
                 }
             }
         }

@@ -103,6 +103,8 @@ abstract class BaseFolderFragment(fragment: Int) : Fragment(fragment) {
         viewModel.tagFilter.observe(viewLifecycleOwner) {
             viewModel.getNotesByFilters()
             tagSpinner.setSelection(tagAdapter.getPosition(it))
+
+            closeSpinner(tagSpinner)
         }
 
         viewModel.sortingDirection.observe(viewLifecycleOwner) {
@@ -112,12 +114,16 @@ abstract class BaseFolderFragment(fragment: Int) : Fragment(fragment) {
                 else
                     sortingIcon.setImageResource(R.drawable.ic_sort_desc)
             }
+
+            closeSpinner(variantSpinner)
         }
 
         viewModel.sortingVariant.observe(viewLifecycleOwner) {
             variantSpinner.setSelection(variantAdapter.getPosition(it))
             val thisFolder = viewModel.currentFolder.value?.note?.noteId ?: 0
             viewModel.getNotes(thisFolder)
+
+            closeSpinner(variantSpinner)
         }
     }
 
@@ -186,4 +192,12 @@ abstract class BaseFolderFragment(fragment: Int) : Fragment(fragment) {
 
     protected abstract fun onNoteClick(note: NoteEntity)
     protected abstract fun onNoteLongClick(note: NoteEntity)
+
+    protected fun closeSpinner(spinner: Spinner) {
+        val method = Spinner::class.java.getDeclaredMethod(
+            "onDetachedFromWindow"
+        )
+        method.isAccessible = true
+        method.invoke(spinner)
+    }
 }
