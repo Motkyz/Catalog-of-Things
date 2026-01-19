@@ -4,19 +4,14 @@ import android.util.Log
 import com.example.catalogofthings.data.db.NotesDAO
 import com.example.catalogofthings.data.model.NoteEntity
 import com.example.catalogofthings.data.model.NoteFull
-import com.example.catalogofthings.data.model.NoteImageCrossRef
 import com.example.catalogofthings.data.model.NoteWithTags
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 import com.example.catalogofthings.data.model.NoteTagCrossRef
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.withContext
 
 interface NotesRepository {
-    fun getNotes(id: Int = 0): Flow<List<NoteWithTags>>
+    fun getNotes(id: Int?): Flow<List<NoteWithTags>>
     fun getNotesByFilters(search: String?, tagId: Int?): Flow<List<NoteWithTags>>
     suspend fun getNote(id: Int): NoteWithTags?
     fun getAllFolders(id : Int): Flow<List<NoteEntity>>
@@ -26,15 +21,17 @@ interface NotesRepository {
     suspend fun deleteNote(noteEntity: NoteEntity): Int
     suspend fun addTag(noteId: Int, tagId: Int)
     suspend fun deleteTag(noteId: Int, tagId: Int)
-    suspend fun addImage(noteId: Int, imageId: Int)
     suspend fun updateChildrenCount(parentId: Int)
 }
 
 class NotesRepositoryImpl @Inject constructor(
     private val dao: NotesDAO
 ): NotesRepository {
-    override fun getNotes(id: Int): Flow<List<NoteWithTags>> =
-        dao.getNotes(id)
+    override fun getNotes(id: Int? ): Flow<List<NoteWithTags>> =
+        if (id == 0 || id == null)
+            dao.getNullParentNotes()
+        else
+            dao.getNotes(id)
 
     override fun getNotesByFilters(
         search: String?,
@@ -85,8 +82,10 @@ class NotesRepositoryImpl @Inject constructor(
         )
 
         if (oldNote.parentId != newNote.parentId) {
-            if (oldNote.parentId != 0) updateChildrenCount(oldNote.parentId)
-            if (newNote.parentId != 0) updateChildrenCount(newNote.parentId)
+            if (oldNote.parentId != 0 && oldNote.parentId != null)
+                updateChildrenCount(oldNote.parentId)
+            if (newNote.parentId != 0 && newNote.parentId != null)
+                updateChildrenCount(newNote.parentId)
         }
     }
 
@@ -96,32 +95,25 @@ class NotesRepositoryImpl @Inject constructor(
         val location = buildLocation(parentNote)
         noteEntity.location = location
 
+        val entity =
+        if (noteEntity.parentId == 0) {
+            noteEntity.copy(parentId = null)
+        } else noteEntity
+
         val noteId = dao.upsertNote(
-            noteEntity
+            entity
         ).toInt()
 
-        updateChildrenCount(noteEntity.parentId)
+        if (noteEntity.parentId != 0 && noteEntity.parentId != null)
+            updateChildrenCount(noteEntity.parentId)
 
         return noteId
     }
 
     override suspend fun deleteNote(noteEntity: NoteEntity): Int {
-        //Удаляем дочерние элементы
-        if (noteEntity.isFolder) {
-            val children = dao.getNotes(noteEntity.noteId).first()
-            for (child in children) {
-                deleteNote(child.note)
-            }
-        } else {
-            //Удаляем картинки из бд
-            val fullNote = getFullNote(noteEntity.noteId)
-            for (image in fullNote?.images ?: listOf()) {
-                dao.deleteImage(image)
-            }
-        }
-
         val id = dao.deleteNote(noteEntity)
-        updateChildrenCount(noteEntity.parentId)
+        if (noteEntity.parentId != 0 && noteEntity.parentId != null)
+            updateChildrenCount(noteEntity.parentId)
         return id
     }
 
@@ -149,19 +141,6 @@ class NotesRepositoryImpl @Inject constructor(
         )
     }
 
-    override suspend fun addImage(
-        noteId: Int,
-        imageId: Int
-    ) {
-        Log.d("addImage", "$noteId, $imageId")
-        dao.addNoteImage(
-            NoteImageCrossRef(
-                noteId,
-                imageId
-            )
-        )
-    }
-
     override suspend fun updateChildrenCount(parentId: Int) {
         if (parentId != 0) {
             val count = dao.getChildrenCount(parentId)
@@ -176,8 +155,11 @@ class NotesRepositoryImpl @Inject constructor(
         }
     }
 
-    private suspend fun getParent(id: Int): NoteEntity? =
-        dao.getNoteWithOutTags(id)
+    private suspend fun getParent(id: Int?): NoteEntity? =
+        if (id != 0 && id != null )
+            dao.getNoteWithOutTags(id)
+        else
+            null
 
     private fun buildLocation(parentNote: NoteEntity?): String =
         "${parentNote?.location ?: ""}${parentNote?.noteId ?: 0}/"

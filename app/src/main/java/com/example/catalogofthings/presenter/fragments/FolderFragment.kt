@@ -167,8 +167,8 @@ class FolderFragment : BaseFolderFragment(R.layout.fragment_open_folder) {
             val parent = viewModel.currentFolder.value?.note?.parentId
             if (parent != null && parent != 0) {
                 viewModel.setFolder(parent)
-            } else if (parent == 0) {
-                viewModel.setFolder(parent)
+            } else {
+                viewModel.setFolder(0)
             }
             findNavController().popBackStack()
         }

@@ -44,7 +44,7 @@ class NoteFragment : Fragment(R.layout.fragment_note) {
     private lateinit var imagesAdapter: ListImagesAdapter
     private var isNewNote : Boolean = false
     private var oldNote : NoteEntity? = null
-    private var parentId: Int = 0
+    private var parentId: Int? = null
 
 //     Выбор изображения из галереи
     private val pickImageLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
@@ -53,8 +53,8 @@ class NoteFragment : Fragment(R.layout.fragment_note) {
                 val bytes = ImageConverter.toByteArray(requireContext(), uri)
                     ?: return@launch
 
-                val newImage = ImageEntity(imageData = bytes)
-                viewModel.loadImage(newImage)
+                val newImage = ImageEntity(imageData = bytes, noteId = 1)
+                viewModel.addImage(newImage)
             }
         }
     }
@@ -63,9 +63,11 @@ class NoteFragment : Fragment(R.layout.fragment_note) {
         super.onViewCreated(view, savedInstanceState)
 
         val noteId = arguments?.getInt("id")
-        isNewNote = noteId == 0
+        isNewNote = noteId == 0 || noteId == null
 
-        parentId = arguments?.getInt("parentId") ?: 0
+        parentId = if (arguments?.getInt("parentId") != 0)
+            arguments?.getInt("parentId")
+                    else null
         setFragmentResult(
             "requestKey",
             bundleOf(
@@ -123,7 +125,6 @@ class NoteFragment : Fragment(R.layout.fragment_note) {
                     .show(parentFragmentManager, "fullscreen_image")
             },
             onImageLongClick = {
-                Log.d("onImageLongClick", "НАЖАЛОСЬ")
                 ImageActionsDialog.show(
                     context = requireContext(),
                     onAccept = {
@@ -153,16 +154,15 @@ class NoteFragment : Fragment(R.layout.fragment_note) {
             val title = binding.includeHeaderNote.titleFolder.text?.toString()?.trim() ?: ""
             val description = binding.edittextForDescriptionNote.text?.toString()?.trim() ?: ""
 
-            if (title.isBlank() && description.isBlank() &&
-                viewModel.noteImages.value?.isEmpty() == true &&
+            if (title.isBlank() &&
+                description.isBlank() &&
+                viewModel.noteImages.value.isNullOrEmpty() &&
                 viewModel.noteTags.value?.isEmpty() == true) {
                 findNavController().popBackStack()
                 return@setOnClickListener
             }
 
-            val image =
-                if (viewModel.noteImages.value.isNullOrEmpty()) null
-                else viewModel.noteImages.value?.get(0)?.imageData
+            val image = viewModel.noteImages.value?.get(0)?.imageData
 
             val updatedNote = NoteEntity(
                 title = title,
@@ -174,12 +174,12 @@ class NoteFragment : Fragment(R.layout.fragment_note) {
 
             if (isNewNote) {
                 viewModel.createNote(
-                    noteEntity = updatedNote,
+                    noteEntity = updatedNote
                 )
             } else oldNote?.let {
                 viewModel.updateNote(
                     oldNote = it,
-                    newNote = updatedNote,
+                    newNote = updatedNote
                 )
             }
         }

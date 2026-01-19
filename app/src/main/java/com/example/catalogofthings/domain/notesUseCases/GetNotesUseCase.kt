@@ -7,13 +7,13 @@ import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 interface GetNotesUseCase {
-    operator fun invoke(id: Int): Flow<List<NoteWithTags>>
+    suspend operator fun invoke(id: Int?): Flow<List<NoteWithTags>>
 }
 
 class GetNotesUseCaseImpl @Inject constructor(
     private val repository: NotesRepository
 ): GetNotesUseCase {
-    override fun invoke(id: Int): Flow<List<NoteWithTags>> {
+    override suspend fun invoke(id: Int?): Flow<List<NoteWithTags>> {
         return repository.getNotes(id)
     }
 }

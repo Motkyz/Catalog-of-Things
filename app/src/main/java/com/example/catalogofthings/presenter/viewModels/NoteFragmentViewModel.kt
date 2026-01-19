@@ -11,7 +11,6 @@ import com.example.catalogofthings.data.model.NoteFull
 import com.example.catalogofthings.data.model.TagEntity
 import com.example.catalogofthings.domain.imagesUseCases.CreateImageUseCase
 import com.example.catalogofthings.domain.imagesUseCases.DeleteImageUseCase
-import com.example.catalogofthings.domain.notesUseCases.AddImageToNoteUseCase
 import com.example.catalogofthings.domain.notesUseCases.AddTagToNoteUseCase
 import com.example.catalogofthings.domain.notesUseCases.CreateNoteUseCase
 import com.example.catalogofthings.domain.notesUseCases.DeleteTagFromNoteUseCase
@@ -25,7 +24,6 @@ class NoteFragmentViewModel @Inject constructor(
     private val getFullNoteUseCase: GetFullNoteUseCase,
     private val updateNoteUseCase: UpdateNoteUseCase,
     private val createImageUseCase: CreateImageUseCase,
-    private val addImageToNoteUseCase: AddImageToNoteUseCase,
     private val deleteImageUseCase: DeleteImageUseCase,
     private val addTagToNoteUseCase: AddTagToNoteUseCase,
     private val deleteTagFromNoteUseCase: DeleteTagFromNoteUseCase,
@@ -57,12 +55,14 @@ class NoteFragmentViewModel @Inject constructor(
     val success: LiveData<Boolean> get() = _success
 
     fun createNote(
-        noteEntity: NoteEntity) {
+        noteEntity: NoteEntity
+        ) {
         try{
             viewModelScope.launch {
                 val noteId = createNoteUseCase(noteEntity)
-                for (image in _noteImages.value ?: listOf()) {
-                    addImageToNoteUseCase(noteId, image.imageId)
+                for (image in noteImages.value ?: listOf()) {
+                    image.noteId = noteId
+                    createImageUseCase(image)
                 }
                 for (tag in _noteTags.value ?: listOf()) {
                     addTagToNoteUseCase(noteId, tag.tagId)
@@ -85,7 +85,6 @@ class NoteFragmentViewModel @Inject constructor(
 
             val note = getFullNoteUseCase(oldNote.noteId)
             val oldTags = note?.tags ?: listOf()
-
             for (tag in oldTags) {
                 if (!(_noteTags.value ?: listOf()).contains(tag))
                     deleteTagFromNoteUseCase(oldNote.noteId, tag.tagId)
@@ -96,15 +95,13 @@ class NoteFragmentViewModel @Inject constructor(
             }
 
             val oldImages = note?.images ?: listOf()
-            for (image in oldImages) {
-                if (!(_noteImages.value ?: listOf()).contains(image))
-                    deleteImageUseCase(image)
-            }
-            for (image in _noteImages.value ?: listOf()) {
+            for (image in noteImages.value ?: listOf()) {
                 if (!oldImages.contains(image)) {
-                    addImageToNoteUseCase(oldNote.noteId, image.imageId)
+                    image.noteId = oldNote.noteId
+                    createImageUseCase(image)
                 }
             }
+
             _success.postValue(true)
         }
     }
@@ -118,30 +115,21 @@ class NoteFragmentViewModel @Inject constructor(
     }
 
     private val _noteImages = MutableLiveData<List<ImageEntity>>()
-    val noteImages : LiveData<List<ImageEntity>>
+    val noteImages: LiveData<List<ImageEntity>>
         get() = _noteImages
 
-    fun loadImage(image : ImageEntity){
+    fun addImage(image: ImageEntity) {
         viewModelScope.launch {
-            val imageId = createImageUseCase(image)
-
-            val createdImage = ImageEntity(
-                imageId,
-                image.imageData
-            )
-
-            val currentList = _noteImages.value ?: emptyList()
-            _noteImages.postValue(currentList + createdImage)
+            val updatedList = _noteImages.value ?: emptyList()
+            _noteImages.postValue(updatedList + image)
         }
     }
 
     fun deleteImage(image: ImageEntity){
         viewModelScope.launch {
-
-            val updatedList = _noteImages.value?.minusElement(image)
-            if (updatedList != null){
-                _noteImages.postValue(updatedList)
-            }
+            deleteImageUseCase(image)
+            val updatedList = _noteImages.value ?: emptyList()
+            _noteImages.postValue(updatedList - image)
         }
     }
 }

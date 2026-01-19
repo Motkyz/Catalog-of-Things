@@ -120,8 +120,8 @@ abstract class BaseFolderFragment(fragment: Int) : Fragment(fragment) {
 
         viewModel.sortingVariant.observe(viewLifecycleOwner) {
             variantSpinner.setSelection(variantAdapter.getPosition(it))
-            val thisFolder = viewModel.currentFolder.value?.note?.noteId ?: 0
-            viewModel.getNotes(thisFolder)
+            val thisFolderId = viewModel.currentFolder.value?.note?.noteId
+            viewModel.getNotes(thisFolderId)
 
             closeSpinner(variantSpinner)
         }

@@ -23,7 +23,7 @@ class CreateFolderBottomSheet : BottomSheetDialogFragment() {
     companion object {
         private const val ARG_PARENT_ID = "arg_parent_id"
 
-        fun newInstance(parentId: Int): CreateFolderBottomSheet {
+        fun newInstance(parentId: Int?): CreateFolderBottomSheet {
             return CreateFolderBottomSheet().apply {
                 arguments = bundleOf(ARG_PARENT_ID to parentId)
             }

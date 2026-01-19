@@ -4,11 +4,21 @@ import androidx.room.ColumnInfo
 import androidx.room.ColumnInfo.Companion.BLOB
 import androidx.room.Embedded
 import androidx.room.Entity
+import androidx.room.ForeignKey
+import androidx.room.ForeignKey.Companion.CASCADE
+import androidx.room.Index
 import androidx.room.Junction
 import androidx.room.PrimaryKey
 import androidx.room.Relation
 
-@Entity(tableName = NoteEntity.TABLE)
+@Entity(tableName = NoteEntity.TABLE,
+    foreignKeys = [ForeignKey(
+        entity = NoteEntity::class,
+        parentColumns = ["noteId"],
+        childColumns = ["parentId"],
+        onDelete = CASCADE
+    )]
+)
 data class NoteEntity (
     @PrimaryKey(autoGenerate = true)
     val noteId: Int = 0,
@@ -18,7 +28,8 @@ data class NoteEntity (
     val date: Long = System.currentTimeMillis(),
 
     var location: String = "",
-    val parentId: Int,
+
+    val parentId: Int? = null,
     val childrenCount: Int = 0,
 
     @ColumnInfo(typeAffinity = BLOB)
@@ -37,7 +48,6 @@ data class NoteEntity (
         if (noteId != other.noteId) return false
         if (isFolder != other.isFolder) return false
         if (date != other.date) return false
-        if (parentId != other.parentId) return false
         if (childrenCount != other.childrenCount) return false
         if (title != other.title) return false
         if (description != other.description) return false
@@ -51,7 +61,6 @@ data class NoteEntity (
         var result = noteId
         result = 31 * result + isFolder.hashCode()
         result = 31 * result + date.hashCode()
-        result = 31 * result + parentId
         result = 31 * result + childrenCount
         result = 31 * result + title.hashCode()
         result = 31 * result + description.hashCode()
@@ -83,8 +92,7 @@ data class NoteFull(
     val tags: List<TagEntity>,
     @Relation(
         parentColumn = "noteId",
-        entityColumn = "imageId",
-        associateBy = Junction(NoteImageCrossRef::class)
+        entityColumn = "noteId"
     )
     val images: List<ImageEntity>
 )
