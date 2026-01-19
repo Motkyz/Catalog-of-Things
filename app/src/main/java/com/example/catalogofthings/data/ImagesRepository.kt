@@ -1,6 +1,6 @@
 package com.example.catalogofthings.data
 
-import com.example.catalogofthings.data.db.NotesDAO
+import com.example.catalogofthings.data.db.ImagesDAO
 import com.example.catalogofthings.data.model.ImageEntity
 import javax.inject.Inject
 
@@ -11,7 +11,7 @@ interface ImagesRepository {
 }
 
 class ImagesRepositoryImpl @Inject constructor(
-    private val dao: NotesDAO
+    private val dao: ImagesDAO
 ): ImagesRepository {
     override suspend fun createImage(imageEntity: ImageEntity): Int =
         dao.upsertImage(

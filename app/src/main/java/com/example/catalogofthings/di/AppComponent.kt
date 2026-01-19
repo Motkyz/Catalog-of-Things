@@ -1,6 +1,10 @@
 package com.example.catalogofthings.di
 
 import android.app.Application
+import com.example.catalogofthings.di.binds.AppBindsModule
+import com.example.catalogofthings.di.binds.ImagesBindsModule
+import com.example.catalogofthings.di.binds.NotesBindsModule
+import com.example.catalogofthings.di.binds.TagsBindsModule
 import com.example.catalogofthings.di.viewModel.ViewModelModule
 import com.example.catalogofthings.presenter.fragments.BaseFolderFragment
 import com.example.catalogofthings.presenter.fragments.ChooseFolderBottomSheet
@@ -39,6 +43,9 @@ abstract class AppComponent {
 @Module(
     includes = [
         AppBindsModule::class,
+        NotesBindsModule::class,
+        TagsBindsModule::class,
+        ImagesBindsModule::class,
         ViewModelModule::class
     ]
 )

@@ -17,6 +17,8 @@ import com.example.catalogofthings.appComponent
 import com.example.catalogofthings.data.model.NoteEntity
 import com.example.catalogofthings.databinding.FragmentStartAppBinding
 import com.example.catalogofthings.databinding.IncludeNotesNotFoundBinding
+import com.example.catalogofthings.databinding.IncludeRecyclerNotesBinding
+import com.example.catalogofthings.databinding.IncludeSearchBarBinding
 import com.example.catalogofthings.presenter.actionDialog.NoteActionDialog
 import com.example.catalogofthings.presenter.adapters.ListNotesAdapter
 import dev.androidbroadcast.vbpd.viewBinding
@@ -24,27 +26,22 @@ import dev.androidbroadcast.vbpd.viewBinding
 class StartFragment: BaseFolderFragment(R.layout.fragment_start_app) {
     private val binding: FragmentStartAppBinding by viewBinding(FragmentStartAppBinding::bind)
 
-    override fun setTagSpinner() {
-        tagSpinner = binding.searchBarStartFragment.tagSpinnerFilterInFolder
-    }
+    override var tagSpinner: Spinner? = null
+    override var variantSpinner: Spinner? = null
 
-    override fun setVariantSpinner() {
-        variantSpinner = binding.searchBarStartFragment.buttonSortInFolder
-    }
-
-    override fun setFragmentBindings() {
-        bindingNotesNotFound = binding.includedNotesNotFoundStartFragment
-        bindingRecyclerNotes = binding.includedRecyclerNotesStartFragment
-        bindingSearchBar = binding.searchBarStartFragment
-    }
+    override var bindingNotesNotFound: IncludeNotesNotFoundBinding? = null
+    override var bindingRecyclerNotes: IncludeRecyclerNotesBinding? = null
+    override var bindingSearchBar: IncludeSearchBarBinding? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        with(bindingRecyclerNotes.recyclerNotes) {
-            layoutManager = LinearLayoutManager(requireContext())
-            adapter = this@StartFragment.adapter
-        }
+        initMainAdapter()
+        initTagSpinner()
+        initVariantSpinner()
+
+        bindingNotesNotFound = binding.includedNotesNotFoundStartFragment
+        bindingSearchBar = binding.searchBarStartFragment
 
         setBindings()
         setObserves()
@@ -77,6 +74,21 @@ class StartFragment: BaseFolderFragment(R.layout.fragment_start_app) {
             bottomSheet.show(childFragmentManager, "create_folder_bottom_modal")
             true
         }
+    }
+
+    override fun initMainAdapter() {
+        bindingRecyclerNotes = binding.includedRecyclerNotesStartFragment
+        super.initMainAdapter()
+    }
+
+    override fun initTagSpinner() {
+        tagSpinner = binding.searchBarStartFragment.tagSpinnerFilterInFolder
+        super.initTagSpinner()
+    }
+
+    override fun initVariantSpinner() {
+        variantSpinner = binding.searchBarStartFragment.buttonSortInFolder
+        super.initVariantSpinner()
     }
 
     override fun onNoteClick(note: NoteEntity) {

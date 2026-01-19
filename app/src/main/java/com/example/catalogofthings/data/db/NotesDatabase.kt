@@ -18,4 +18,6 @@ import com.example.catalogofthings.data.model.TagEntity
 )
 abstract class NotesDatabase: RoomDatabase() {
     abstract val notesDAO: NotesDAO
+    abstract val tagsDAO: TagsDAO
+    abstract val imagesDAO: ImagesDAO
 }

@@ -71,29 +71,6 @@ interface NotesDAO {
     @Query("SELECT * FROM ${NoteEntity.TABLE} WHERE isFolder = 1")
     fun getAllFolders(): Flow<List<NoteEntity>>
 
-    //Tags
-    @Upsert
-    suspend fun upsertTag(tagEntity: TagEntity): Long
-
-    @Query("SELECT * FROM ${TagEntity.TABLE} ORDER BY title")
-    fun getAllTags(): Flow<List<TagEntity>>
-
-    @Query("SELECT * FROM ${TagEntity.TABLE} WHERE tagId = :id")
-    suspend fun getTag(id: Int): TagEntity?
-
-    @Delete
-    suspend fun deleteTag(tagEntity: TagEntity): Int
-
-    //Images
-    @Upsert
-    suspend fun upsertImage(imageEntity: ImageEntity): Long
-
-    @Delete
-    suspend fun deleteImage(imageEntity: ImageEntity): Int
-
-    @Query("SELECT * FROM ${ImageEntity.TABLE} WHERE imageId = :id")
-    suspend fun getImage(id: Int): ImageEntity?
-
     //NoteTags
     @Upsert
     suspend fun addNoteTag(noteTagCrossRef: NoteTagCrossRef)
@@ -103,11 +80,4 @@ interface NotesDAO {
 
     @Query("DELETE FROM ${NoteTagCrossRef.TABLE} WHERE noteId = :noteId")
     suspend fun deleteNoteTags(noteId: Int)
-
-    //NoteImages
-//    @Upsert
-//    suspend fun addNoteImage(noteImageCrossRef: NoteImageCrossRef)
-
-    @Query("DELETE FROM ${ImageEntity.TABLE} WHERE noteId = :noteId")
-    suspend fun deleteNoteImages(noteId: Int)
 }

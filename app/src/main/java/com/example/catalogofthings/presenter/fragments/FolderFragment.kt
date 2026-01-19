@@ -14,30 +14,32 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.catalogofthings.appComponent
 import com.example.catalogofthings.data.model.NoteEntity
 import com.example.catalogofthings.databinding.FragmentOpenFolderBinding
+import com.example.catalogofthings.databinding.IncludeNotesNotFoundBinding
+import com.example.catalogofthings.databinding.IncludeRecyclerNotesBinding
+import com.example.catalogofthings.databinding.IncludeSearchBarBinding
 import com.example.catalogofthings.presenter.actionDialog.NoteActionDialog
 import com.example.catalogofthings.presenter.adapters.ListNotesAdapter
 import dev.androidbroadcast.vbpd.viewBinding
 
 class FolderFragment : BaseFolderFragment(R.layout.fragment_open_folder) {
-
     private val binding: FragmentOpenFolderBinding by viewBinding(FragmentOpenFolderBinding::bind)
 
-    override fun setTagSpinner() {
-        tagSpinner = binding.includeSearchBarFolderFragment.tagSpinnerFilterInFolder
-    }
+    override var tagSpinner: Spinner? = null
+    override var variantSpinner: Spinner? = null
 
-    override fun setVariantSpinner() {
-        bindingNotesNotFound = binding.includedNotesNotFoundFolderFragment
-        bindingRecyclerNotes = binding.includedRecyclerNotesFolderFragment
-        variantSpinner = binding.includeSearchBarFolderFragment.buttonSortInFolder
-    }
-
-    override fun setFragmentBindings() {
-        bindingSearchBar = binding.includeSearchBarFolderFragment
-    }
+    override var bindingNotesNotFound: IncludeNotesNotFoundBinding? = null
+    override var bindingRecyclerNotes: IncludeRecyclerNotesBinding? = null
+    override var bindingSearchBar: IncludeSearchBarBinding? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        initMainAdapter()
+        initTagSpinner()
+        initVariantSpinner()
+
+        bindingNotesNotFound = binding.includedNotesNotFoundFolderFragment
+        bindingSearchBar = binding.includeSearchBarFolderFragment
 
         val folderId = arguments?.getInt("id") ?: 0
 
@@ -48,11 +50,6 @@ class FolderFragment : BaseFolderFragment(R.layout.fragment_open_folder) {
         setFragmentResultListener("requestKey") {requestKey, bundle ->
             val folderId = bundle.getInt("folderId")
             if (folderId > 0) viewModel.setFolder(folderId)
-        }
-
-        with(bindingRecyclerNotes.recyclerNotes) {
-            layoutManager = LinearLayoutManager(requireContext())
-            adapter = this@FolderFragment.adapter
         }
 
         setBindings()
@@ -172,6 +169,21 @@ class FolderFragment : BaseFolderFragment(R.layout.fragment_open_folder) {
             }
             findNavController().popBackStack()
         }
+    }
+
+    override fun initMainAdapter() {
+        bindingRecyclerNotes = binding.includedRecyclerNotesFolderFragment
+        super.initMainAdapter()
+    }
+
+    override fun initTagSpinner() {
+        tagSpinner = binding.includeSearchBarFolderFragment.tagSpinnerFilterInFolder
+        super.initTagSpinner()
+    }
+
+    override fun initVariantSpinner() {
+        variantSpinner = binding.includeSearchBarFolderFragment.buttonSortInFolder
+        super.initVariantSpinner()
     }
 
     override fun onAttach(context: Context) {
