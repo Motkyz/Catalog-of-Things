@@ -9,6 +9,7 @@ import android.widget.EditText
 import android.widget.Spinner
 import androidx.core.os.bundleOf
 import androidx.core.widget.doAfterTextChanged
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.catalogofthings.R
@@ -52,7 +53,7 @@ class StartFragment: BaseFolderFragment(R.layout.fragment_start_app) {
     override fun setObserves() {
         super.setObserves()
 
-        viewModel.getNotes(0)
+        viewModel.getNotes(null)
     }
 
     override fun setBindings(){
@@ -63,13 +64,13 @@ class StartFragment: BaseFolderFragment(R.layout.fragment_start_app) {
                 R.id.action_startFragment_to_noteFragment,
                 bundleOf(
                     "id" to 0,
-                    "parentId" to 0
+                    "parentId" to null
                 )
             )
         }
 
         binding.addNew.setOnLongClickListener {
-            val bottomSheet = CreateFolderBottomSheet.newInstance(parentId = 0)
+            val bottomSheet = CreateFolderBottomSheet.newInstance(parentId = null)
             bottomSheet.setOnFolderCreatedListener { newFolder ->
                 viewModel.createFolder(newFolder)
             }
@@ -79,20 +80,22 @@ class StartFragment: BaseFolderFragment(R.layout.fragment_start_app) {
     }
 
     override fun onNoteClick(note: NoteEntity) {
-        if (note.isFolder) {
-            findNavController().navigate(
-                R.id.action_startFragment_to_folderFragment,
-                bundleOf(
-                    "id" to note.noteId
+        if (findNavController().currentBackStackEntry?.destination?.id == R.id.startFragment) {
+            if (note.isFolder) {
+                findNavController().navigate(
+                    R.id.action_startFragment_to_folderFragment,
+                    bundleOf(
+                        "id" to note.noteId
+                    )
                 )
-            )
-        } else {
-            findNavController().navigate(
-                R.id.action_startFragment_to_noteFragment,
-                bundleOf(
-                    "id" to note.noteId
+            } else {
+                findNavController().navigate(
+                    R.id.action_startFragment_to_noteFragment,
+                    bundleOf(
+                        "id" to note.noteId
+                    )
                 )
-            )
+            }
         }
     }
 

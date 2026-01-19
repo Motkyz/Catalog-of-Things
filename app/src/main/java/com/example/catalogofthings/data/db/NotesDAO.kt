@@ -8,7 +8,6 @@ import androidx.room.Upsert
 import com.example.catalogofthings.data.model.ImageEntity
 import com.example.catalogofthings.data.model.NoteEntity
 import com.example.catalogofthings.data.model.NoteFull
-import com.example.catalogofthings.data.model.NoteImageCrossRef
 import com.example.catalogofthings.data.model.NoteTagCrossRef
 import com.example.catalogofthings.data.model.NoteWithTags
 import com.example.catalogofthings.data.model.TagEntity
@@ -24,8 +23,12 @@ interface NotesDAO {
     @Transaction
     @Query("SELECT * FROM ${NoteEntity.TABLE} " +
             "WHERE parentId = :parentId ORDER BY noteId")
-    fun getNotes(parentId: Int = 0): Flow<List<NoteWithTags>>
+    fun getNotes(parentId: Int): Flow<List<NoteWithTags>>
 
+    @Transaction
+    @Query("SELECT * FROM ${NoteEntity.TABLE} " +
+            "WHERE parentId IS NULL ORDER BY noteId")
+    fun getNullParentNotes(): Flow<List<NoteWithTags>>
 
     @Transaction
     @Query("SELECT * FROM ${NoteEntity.TABLE} " +
@@ -102,9 +105,9 @@ interface NotesDAO {
     suspend fun deleteNoteTags(noteId: Int)
 
     //NoteImages
-    @Upsert
-    suspend fun addNoteImage(noteImageCrossRef: NoteImageCrossRef)
+//    @Upsert
+//    suspend fun addNoteImage(noteImageCrossRef: NoteImageCrossRef)
 
-    @Query("DELETE FROM ${NoteImageCrossRef.TABLE} WHERE noteId = :noteId")
+    @Query("DELETE FROM ${ImageEntity.TABLE} WHERE noteId = :noteId")
     suspend fun deleteNoteImages(noteId: Int)
 }

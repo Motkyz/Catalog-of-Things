@@ -1,5 +1,6 @@
 package com.example.catalogofthings.presenter.viewModels
 
+import android.util.Log
 import androidx.collection.intSetOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -84,9 +85,9 @@ class FolderViewModel @Inject constructor(
     val currentFolder: LiveData<NoteWithTags?>
         get() = _currentFolder
 
-    fun setFolder(id: Int) {
+    fun setFolder(id: Int?) {
         viewModelScope.launch {
-            val folder = getNoteUseCase(id)
+            val folder = getNoteUseCase(id ?: 0)
             _currentFolder.postValue(
                 folder
             )
@@ -97,7 +98,7 @@ class FolderViewModel @Inject constructor(
     val notes: LiveData<List<NoteWithTags>>
         get() = _notes
 
-    fun getNotes(id: Int) {
+    fun getNotes(id: Int?) {
         viewModelScope.launch {
             getNotesUseCase(id).collect {
                 _notes.postValue(
