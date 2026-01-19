@@ -1,17 +1,15 @@
 package com.example.catalogofthings.presenter.fragments
 
-import android.content.Context
 import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
-import android.widget.EditText
 import android.widget.Spinner
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.catalogofthings.R
-import com.example.catalogofthings.appComponent
 import com.example.catalogofthings.data.model.NoteEntity
 import com.example.catalogofthings.data.model.TagEntity
 import com.example.catalogofthings.databinding.IncludeNotesNotFoundBinding
@@ -34,43 +32,25 @@ abstract class BaseFolderFragment(fragment: Int) : Fragment(fragment) {
 
     protected val viewModel: FolderViewModel by viewModels { viewModelFactory }
 
-    protected lateinit var tagSpinner: Spinner
-    protected lateinit var tagAdapter: TagSpinnerAdapter
+    protected abstract val tagSpinner: Spinner?
+    protected abstract val variantSpinner: Spinner?
 
-    protected lateinit var variantSpinner: Spinner
-    protected lateinit var variantAdapter: SortingSpinnerAdapter
-
-    protected lateinit var bindingNotesNotFound: IncludeNotesNotFoundBinding
-    protected lateinit var bindingRecyclerNotes: IncludeRecyclerNotesBinding
-    protected lateinit var bindingSearchBar: IncludeSearchBarBinding
-
-    protected abstract fun setTagSpinner()
-    protected abstract fun setVariantSpinner()
-    protected abstract fun setFragmentBindings()
-
+    protected abstract val bindingNotesNotFound: IncludeNotesNotFoundBinding?
+    protected abstract val bindingRecyclerNotes: IncludeRecyclerNotesBinding?
+    protected abstract val bindingSearchBar: IncludeSearchBarBinding?
 
     protected lateinit var adapter: ListNotesAdapter
+    protected lateinit var tagAdapter: TagSpinnerAdapter
+    protected lateinit var variantAdapter: SortingSpinnerAdapter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-
-        setFragmentBindings()
-        setTagSpinner()
-        setVariantSpinner()
-
-        adapter = ListNotesAdapter(
-            onNoteClick = ::onNoteClick,
-            onNoteLongClick = ::onNoteLongClick
-        )
-
-        initTagSpinner()
-        initVariantSpinner()
 
         viewModel.getTags()
     }
 
     protected open fun setBindings() {
 
-        bindingSearchBar.searchInFolderFragment.doAfterTextChanged {
+        bindingSearchBar?.searchInFolderFragment?.doAfterTextChanged {
             viewModel.setSearchFilter(it.toString())
         }
     }
@@ -82,11 +62,11 @@ abstract class BaseFolderFragment(fragment: Int) : Fragment(fragment) {
             val noteEntities = notes.map { it.note }
 
             if (notes.isEmpty()) {
-                bindingNotesNotFound.root.visibility = View.VISIBLE
-                bindingRecyclerNotes.recyclerNotes.visibility = View.GONE
+                bindingNotesNotFound?.root?.visibility = View.VISIBLE
+                bindingRecyclerNotes?.recyclerNotes?.visibility = View.GONE
             } else {
-                bindingNotesNotFound.root.visibility = View.GONE
-                bindingRecyclerNotes.recyclerNotes.visibility = View.VISIBLE
+                bindingNotesNotFound?.root?.visibility = View.GONE
+                bindingRecyclerNotes?.recyclerNotes?.visibility = View.VISIBLE
 
                 adapter.submitList(noteEntities)
             }
@@ -102,7 +82,7 @@ abstract class BaseFolderFragment(fragment: Int) : Fragment(fragment) {
 
         viewModel.tagFilter.observe(viewLifecycleOwner) {
             viewModel.getNotesByFilters()
-            tagSpinner.setSelection(tagAdapter.getPosition(it))
+            tagSpinner?.setSelection(tagAdapter.getPosition(it))
 
             closeSpinner(tagSpinner)
         }
@@ -110,16 +90,16 @@ abstract class BaseFolderFragment(fragment: Int) : Fragment(fragment) {
         viewModel.sortingDirection.observe(viewLifecycleOwner) {
             with(bindingSearchBar) {
                 if (it)
-                    sortingIcon.setImageResource(R.drawable.ic_sort_asc)
+                    this?.sortingIcon?.setImageResource(R.drawable.ic_sort_asc)
                 else
-                    sortingIcon.setImageResource(R.drawable.ic_sort_desc)
+                    this?.sortingIcon?.setImageResource(R.drawable.ic_sort_desc)
             }
 
             closeSpinner(variantSpinner)
         }
 
         viewModel.sortingVariant.observe(viewLifecycleOwner) {
-            variantSpinner.setSelection(variantAdapter.getPosition(it))
+            variantSpinner?.setSelection(variantAdapter.getPosition(it))
             val thisFolderId = viewModel.currentFolder.value?.note?.noteId
             viewModel.getNotes(thisFolderId)
 
@@ -127,12 +107,23 @@ abstract class BaseFolderFragment(fragment: Int) : Fragment(fragment) {
         }
     }
 
-    private fun initTagSpinner() {
+    protected open fun initMainAdapter() {
+        adapter = ListNotesAdapter(
+            onNoteClick = ::onNoteClick,
+            onNoteLongClick = ::onNoteLongClick
+        )
+
+        with(bindingRecyclerNotes?.recyclerNotes) {
+            this?.layoutManager = LinearLayoutManager(requireContext())
+            this?.adapter = this@BaseFolderFragment.adapter
+        }
+    }
+    protected open fun initTagSpinner() {
         tagAdapter = TagSpinnerAdapter(requireContext(), showEmptyOption = true)
         tagAdapter.setOnTagFilterClick(::onTagFilterClick)
-        tagSpinner.adapter = tagAdapter
+        tagSpinner?.adapter = tagAdapter
 
-        tagSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+        tagSpinner?.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
                 parent: AdapterView<*>?,
                 view: View?,
@@ -155,12 +146,12 @@ abstract class BaseFolderFragment(fragment: Int) : Fragment(fragment) {
         }
     }
 
-    private fun initVariantSpinner() {
+    protected open fun initVariantSpinner() {
         variantAdapter = SortingSpinnerAdapter(requireContext())
         variantAdapter.setOnVariantClick(::onVariantClick)
-        variantSpinner.adapter = variantAdapter
+        variantSpinner?.adapter = variantAdapter
 
-        variantSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+        variantSpinner?.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
                 parent: AdapterView<*>?,
                 view: View?,
@@ -193,7 +184,7 @@ abstract class BaseFolderFragment(fragment: Int) : Fragment(fragment) {
     protected abstract fun onNoteClick(note: NoteEntity)
     protected abstract fun onNoteLongClick(note: NoteEntity)
 
-    protected fun closeSpinner(spinner: Spinner) {
+    protected fun closeSpinner(spinner: Spinner?) {
         val method = Spinner::class.java.getDeclaredMethod(
             "onDetachedFromWindow"
         )

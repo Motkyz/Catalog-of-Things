@@ -16,7 +16,6 @@ import com.example.catalogofthings.domain.notesUseCases.GetNotesByFiltersUseCase
 import com.example.catalogofthings.domain.notesUseCases.GetNotesUseCase
 import com.example.catalogofthings.domain.notesUseCases.UpdateNoteUseCase
 import com.example.catalogofthings.domain.tagsUseCases.GetTagsUseCase
-import com.example.catalogofthings.enums.SortingDirectionsEnum
 import com.example.catalogofthings.enums.SortingVariantsEnum
 import kotlinx.coroutines.launch
 import javax.inject.Inject

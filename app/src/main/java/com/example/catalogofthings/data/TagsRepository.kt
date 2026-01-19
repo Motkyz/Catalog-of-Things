@@ -1,6 +1,6 @@
 package com.example.catalogofthings.data
 
-import com.example.catalogofthings.data.db.NotesDAO
+import com.example.catalogofthings.data.db.TagsDAO
 import com.example.catalogofthings.data.model.TagEntity
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
@@ -14,7 +14,7 @@ interface TagsRepository {
 }
 
 class TagsRepositoryImpl @Inject constructor(
-    private val dao: NotesDAO
+    private val dao: TagsDAO
 ): TagsRepository {
 
     override suspend fun createTag(tagEntity: TagEntity): Int =

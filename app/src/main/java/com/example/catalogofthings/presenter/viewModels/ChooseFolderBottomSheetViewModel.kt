@@ -5,11 +5,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.catalogofthings.data.model.NoteEntity
-import com.example.catalogofthings.data.model.TagEntity
 import com.example.catalogofthings.domain.notesUseCases.GetAllFoldersUseCase
 import com.example.catalogofthings.domain.notesUseCases.UpdateNoteUseCase
-import com.example.catalogofthings.domain.tagsUseCases.DeleteTagUseCase
-import com.example.catalogofthings.domain.tagsUseCases.GetTagsUseCase
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 

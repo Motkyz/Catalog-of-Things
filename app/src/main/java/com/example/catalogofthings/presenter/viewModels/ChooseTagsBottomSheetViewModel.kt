@@ -8,7 +8,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.catalogofthings.data.model.TagEntity
 import com.example.catalogofthings.domain.tagsUseCases.DeleteTagUseCase
 import com.example.catalogofthings.domain.tagsUseCases.GetTagsUseCase
-import com.example.catalogofthings.domain.tagsUseCases.UpdateTagUseCase
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
